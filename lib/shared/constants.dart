@@ -17,6 +17,7 @@ String vendorEmail = '';
 String vendorAddr1 = '';
 String vendorAddr2 = '';
 String vendorPhoneNo = '';
+String vendorUpiId = '';
 
 
 List<Item> myCart = [];

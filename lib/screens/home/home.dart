@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
     userUid = user.uid;
     currentVendor = userUid;
     DatabaseService(uid: userUid).getCurrentVendorDetails(userUid);
-
+    /*
     void _showSettingsPanel() {
       showModalBottomSheet(context: context, builder: (context) {
         return Container(
@@ -42,6 +42,8 @@ class _HomeState extends State<Home> {
         );
       },);
     }
+
+     */
 
     Future<bool> _onWillPop() async {
       await showDialog(

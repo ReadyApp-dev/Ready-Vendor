@@ -1,4 +1,5 @@
 import 'package:readyvendor/models/user.dart';
+import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 import 'package:readyvendor/shared/loading.dart';
@@ -15,36 +16,33 @@ class _EditAccountState extends State<EditAccount> {
   final _formKey = GlobalKey<FormState>();
 
   // text field state
-  String email = '';
+  String email = vendorEmail;
   String password = '';
-  String name = '';
-  String addr1 = '';
-  String addr2 = '';
-  String phoneNo = '';
-
-  // form values
-  String _currentName;
-  String _currentSugars;
-  int _currentStrength;
+  String name = vendorName;
+  String addr1 = vendorAddr1;
+  String addr2 = vendorAddr2;
+  String phoneNo = vendorPhoneNo;
+  String upiId = vendorUpiId;
 
   @override
   Widget build(BuildContext context) {
 
     User user = Provider.of<User>(context);
 
-    return StreamBuilder<UserData>(
-        stream: DatabaseService(uid: user.uid).userData,
+    return StreamBuilder<Vendor>(
+        stream: DatabaseService(uid: user.uid).vendorData,
         builder: (context, snapshot) {
           if(snapshot.data == null) return Loading();
+          /*
+          email = vendorEmail;
+          name = vendorName;
+          addr1 = vendorAddr1;
+          addr2 = vendorAddr2;
+          phoneNo = vendorPhoneNo;
+          upiId = vendorUpiId;
+          */
 
-          email = userEmail;
-          name = userName;
-          addr1 = userAddr1;
-          addr2 = userAddr2;
-          phoneNo = userPhoneNo;
-
-
-          UserData userData = snapshot.data;
+          Vendor vendor = snapshot.data;
           return  Scaffold(
             backgroundColor: Colors.brown[100],
             appBar: AppBar(
@@ -59,17 +57,20 @@ class _EditAccountState extends State<EditAccount> {
                 child: ListView(
                   children: <Widget>[
                     SizedBox(height: 20.0),
+                    /*
                     TextFormField(
-                      initialValue: userEmail,
+                      initialValue: vendorEmail,
                       decoration: textInputDecoration.copyWith(hintText: 'E-Mail'),
                       validator: (val) => val.isEmpty ? 'Enter an email' : null,
                       onChanged: (val) {
                         setState(() => email = val);
                       },
                     ),
-                    SizedBox(height: 20.0),
+
+                     */
+                    //SizedBox(height: 20.0),
                     TextFormField(
-                      initialValue: userName,
+                      initialValue: vendorName,
                       decoration: textInputDecoration.copyWith(hintText: 'Name'),
                       validator: (val) => val.isEmpty ? 'Enter your' : null,
                       onChanged: (val) {
@@ -78,7 +79,7 @@ class _EditAccountState extends State<EditAccount> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                      initialValue: userAddr1,
+                      initialValue: vendorAddr1,
                       decoration: textInputDecoration.copyWith(hintText: 'Address Line 1'),
                       validator: (val) => val.isEmpty ? 'Enter your Address' : null,
                       onChanged: (val) {
@@ -87,7 +88,7 @@ class _EditAccountState extends State<EditAccount> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                      initialValue: userAddr2,
+                      initialValue: vendorAddr2,
                       decoration: textInputDecoration.copyWith(hintText: 'Address Line 2'),
                       validator: (val) => val.isEmpty ? 'Enter your Address' : null,
                       onChanged: (val) {
@@ -96,11 +97,20 @@ class _EditAccountState extends State<EditAccount> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
-                      initialValue: userPhoneNo,
+                      initialValue: vendorPhoneNo,
                       decoration: textInputDecoration.copyWith(hintText: 'Phone Number'),
                       validator: (val) => val.length < 10 ? 'Enter a valid phone Number' : null,
                       onChanged: (val) {
                         setState(() => phoneNo = val);
+                      },
+                    ),
+                    SizedBox(height: 20.0),
+                    TextFormField(
+                      initialValue: vendorUpiId,
+                      decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
+                      validator: (val) => val.isEmpty ? 'Enter a valid phone Number' : null,
+                      onChanged: (val) {
+                        setState(() => upiId = val);
                       },
                     ),
                     SizedBox(height: 20.0),
@@ -112,8 +122,17 @@ class _EditAccountState extends State<EditAccount> {
                         ),
                         onPressed: () async {
                           if(_formKey.currentState.validate()){
-                            UserData newUserData = new UserData(email:email,uid:userUid,name: name, addr1: addr1, addr2: addr2, phoneNo: phoneNo,cartVal: userCartVal,cartVendor: userCartVendor);
-                            await DatabaseService(uid: userUid).updateUserData(newUserData);
+                            Vendor newVendorData = new Vendor(email:email,uid:vendorUid,name: name, addr1: addr1, addr2: addr2, phoneNo: phoneNo,upiId: upiId);
+                            print(newVendorData.phoneNo);
+                            await DatabaseService(uid: userUid).updateVendorData(newVendorData);
+                            //await DatabaseService(uid: userUid).getCurrentVendorDetails(vendorUid);
+                            vendorEmail = email;
+                            vendorName = name;
+                            vendorAddr1 = addr1;
+                            vendorAddr2 = addr2;
+                            vendorPhoneNo = phoneNo;
+                            vendorUpiId = upiId;
+
                             final snackBar = SnackBar(
                               content: Text('Data Updated!'),
                             );

@@ -32,9 +32,11 @@ class DatabaseService {
       return Vendor(
         name: doc.data['Name'] ?? '',
         uid: doc.documentID,
-        phoneNo: doc.data['strength'] ?? '0',
-        addr1: doc.data['addr1'] ?? '0',
-        addr2: doc.data['addr2'] ?? '0',
+        phoneNo: doc.data['phone'] ?? '0',
+        addr1: doc.data['address1'] ?? '0',
+        addr2: doc.data['address2'] ?? '0',
+        email: doc.data['email'] ?? '0',
+        upiId: doc.data['upiId'] ?? '0'
       );
     }).toList();
   }
@@ -60,9 +62,10 @@ class DatabaseService {
         uid: vendorId,
         email: value.data['email'],
         name: value.data['Name'],
-        addr1: value.data['addr1'],
-        addr2: value.data['addr2'],
-        phoneNo: value.data['phoneNo'],
+        addr1: value.data['address1'],
+        addr2: value.data['address2'],
+        phoneNo: value.data['phone'],
+        upiId: value.data['upiId'],
       );
     });
   }
@@ -72,10 +75,12 @@ class DatabaseService {
       vendorUid = vendorId;
       vendorName = value.data['name'];
       vendorEmail = value.data['email'];
-      vendorAddr1 = value.data['addr1'];
-      vendorAddr2 = value.data['addr2'];
-      vendorPhoneNo = value.data['phoneNo'];
+      vendorAddr1 = value.data['address1'];
+      vendorAddr2 = value.data['address2'];
+      vendorPhoneNo = value.data['phone'];
+      vendorUpiId = value.data['upiId'];
       currentVendor = vendorId;
+
     });
   }
 
@@ -86,11 +91,13 @@ class DatabaseService {
       name: snapshot.data['name'],
       addr1: snapshot.data['address1'],
       addr2: snapshot.data['address2'],
-      phoneNo: snapshot.data['phoneNo'],
+      phoneNo: snapshot.data['phone'],
       cartVendor: snapshot.data['cartVendor'],
       cartVal: snapshot.data['cartVal'],
     );
   }
+
+
 
   Future<void> updateUserData(UserData userData) async {
     return await userCollection.document(uid).setData({
@@ -113,6 +120,18 @@ class DatabaseService {
       'phone': userData.phoneNo,
       'upiId': userData.upiId,
     });
+  }
+
+  Vendor _vendorDataFromSnapshot(DocumentSnapshot snapshot) {
+    return Vendor(
+      uid: uid,
+      email: snapshot.data['email'],
+      name: snapshot.data['name'],
+      addr1: snapshot.data['address1'],
+      addr2: snapshot.data['address2'],
+      phoneNo: snapshot.data['phone'],
+      upiId: snapshot.data['upiId'],
+    );
   }
 
   // brew list from snapshot
@@ -230,6 +249,11 @@ class DatabaseService {
   Stream<UserData> get userData {
     return userCollection.document(uid).snapshots()
         .map(_userDataFromSnapshot);
+  }
+
+  Stream<Vendor> get vendorData {
+    return vendorCollection.document(uid).snapshots()
+        .map(_vendorDataFromSnapshot);
   }
 
   Stream<List<Order>> get orderHistory {
