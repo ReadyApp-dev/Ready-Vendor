@@ -15,7 +15,6 @@ import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 
 class Home extends StatefulWidget {
-  bool showVendors = true;
   num drawerItemSelected = 1;
   @override
   _HomeState createState() => _HomeState();
@@ -23,13 +22,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
+  String itemName = "";
+  double itemCost = 0.0;
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
 
     User user = Provider.of<User>(context);
     userUid = user.uid;
-    DatabaseService(uid: userUid).getUserDetails();
+    currentVendor = userUid;
+    DatabaseService(uid: userUid).getCurrentVendorDetails(userUid);
 
     void _showSettingsPanel() {
       showModalBottomSheet(context: context, builder: (context) {
@@ -41,12 +44,7 @@ class _HomeState extends State<Home> {
     }
 
     Future<bool> _onWillPop() async {
-      if(widget.drawerItemSelected == 1 && widget.showVendors == false){
-        setState(() {
-          widget.showVendors = true;
-        });
-        return false;
-      }else if(widget.drawerItemSelected != 1){(await showDialog(
+      await showDialog(
         context: context,
         builder: (context) => new AlertDialog(
           title: new Text('Are you sure?'),
@@ -62,9 +60,9 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-      )) ?? false;
-      }
+      ) ?? false;
     }
+
     switch(widget.drawerItemSelected){
       case 1: {
         return new WillPopScope(
@@ -101,21 +99,106 @@ class _HomeState extends State<Home> {
                 ),
                 body: Container(
                   color: Colors.brown[100],
-                  child: widget.showVendors? StreamProvider<List<Vendor>>.value(
-                    value: DatabaseService().vendors,
-                    child:VendorList(
-                      selectVendor: (){
-                        setState(() {
-                          print("yes it works");
-                          widget.showVendors = false;
-                        });
-                      },
-                    ),
-                  ):StreamProvider<List<Item>>.value(
+                  child: StreamProvider<List<Item>>.value(
                     value: DatabaseService().items,
                     child:MenuList(),
                   ),
-                )
+                ),
+              floatingActionButton: FloatingActionButton(
+                  child: Text(
+                      "Add Item",
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () async{
+                    double heightContainer = MediaQuery.of(context).size.height * 0.25;
+                    print(heightContainer);
+                    await showDialog(
+                      context: context,
+                      builder: (context) => StatefulBuilder(
+                        builder: (context, setState) {
+                          return AlertDialog(
+                            title: new Text('Enter New Item'),
+                            content: Form(
+                              key: _formKey,
+                              child: Container(
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width * 0.2,
+                                height: heightContainer,
+                                child: ListView(
+                                  children: <Widget>[
+                                    TextFormField(
+                                      decoration: textInputDecorationSecond
+                                          .copyWith(hintText: 'Item Name'),
+                                      validator: (val) =>
+                                      val.isEmpty
+                                          ? 'Enter item name'
+                                          : null,
+                                      onChanged: (val) {
+                                        setState(() => itemName = val);
+                                      },
+                                    ),
+                                    SizedBox(height: 20.0),
+                                    TextFormField(
+                                      decoration: textInputDecorationSecond
+                                          .copyWith(hintText: 'Cost'),
+                                      validator: (val) =>
+                                      val.isEmpty
+                                          ? 'Enter cost'
+                                          : null,
+                                      onChanged: (val) {
+                                        setState(() =>
+                                        itemCost = val as double);
+                                      },
+                                    ),
+                                    SizedBox(height: 20.0),
+                                    RaisedButton(
+                                      color: Colors.pink[400],
+                                      onPressed: () async {
+                                        //return SystemNavigator.pop();
+                                        if (_formKey.currentState.validate()) {
+                                          print("works");
+                                          Navigator.of(context).pop(false);
+                                          //setState(() => loading = true);
+                                          /*
+                                  dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
+                                  if(result == null) {
+                                    setState(() {
+                                      loading = false;
+                                      error = 'Registration Failed';
+                                    });
+                                  }
+                                  */
+                                        } else {
+                                          setState(() {
+                                            heightContainer = MediaQuery
+                                                .of(context)
+                                                .size
+                                                .height * 0.3;
+                                            print("yes");
+                                          });
+                                        }
+                                      },
+                                      child: new Text(
+                                        'Add Item',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
             )
         );
       }

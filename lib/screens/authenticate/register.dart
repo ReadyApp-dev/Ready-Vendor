@@ -26,6 +26,7 @@ class _RegisterState extends State<Register> {
   String addr1 = '';
   String addr2 = '';
   String phoneNo = '';
+  String upiId = '';
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,7 @@ class _RegisterState extends State<Register> {
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                decoration: textInputDecoration.copyWith(hintText: 'Name'),
+                decoration: textInputDecoration.copyWith(hintText: 'Shop Name'),
                 validator: (val) => val.isEmpty ? 'Enter your' : null,
                 onChanged: (val) {
                   setState(() => name = val);
@@ -99,6 +100,14 @@ class _RegisterState extends State<Register> {
                 },
               ),
               SizedBox(height: 20.0),
+              TextFormField(
+                decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
+                validator: (val) => val.isEmpty ? 'Enter your Address' : null,
+                onChanged: (val) {
+                  setState(() => upiId = val);
+                },
+              ),
+              SizedBox(height: 20.0),
               RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
@@ -108,11 +117,11 @@ class _RegisterState extends State<Register> {
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
                       setState(() => loading = true);
-                      dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo);
+                      dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
                       if(result == null) {
                         setState(() {
                           loading = false;
-                          error = 'Please supply a valid email';
+                          error = 'Registration Failed';
                         });
                       }
                     }

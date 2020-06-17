@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:readyvendor/models/user.dart';
+import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 
@@ -38,23 +39,22 @@ class AuthService {
   }
 
   // register with email and password
-  Future registerWithEmailAndPassword(String email, String password, String name, String addr1, String addr2, String phoneNo) async {
+  Future registerWithEmailAndPassword(String email, String password, String name, String addr1, String addr2, String phoneNo, String upiId) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
       // create a new document for the user with the uid
       userUid = user.uid;
-      UserData userData = UserData(
+      Vendor userData = Vendor(
         uid: user.uid,
         email: email,
         name: name,
         addr1: addr1,
         addr2: addr2,
         phoneNo: phoneNo,
-        cartVendor: '',
-        cartVal: 0.0,
+        upiId: upiId,
       );
-      await DatabaseService(uid: user.uid).updateUserData(userData);
+      await DatabaseService(uid: user.uid).updateVendorData(userData);
       return _userFromFirebaseUser(user);
     } catch (error) {
       print(error.toString());
