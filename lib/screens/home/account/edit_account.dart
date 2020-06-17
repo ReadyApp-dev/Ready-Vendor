@@ -72,7 +72,17 @@ class _EditAccountState extends State<EditAccount> {
                     TextFormField(
                       initialValue: vendorName,
                       decoration: textInputDecoration.copyWith(hintText: 'Name'),
-                      validator: (val) => val.isEmpty ? 'Enter your' : null,
+                      validator: (val) {
+                        if(val.length < 3)
+                          return 'That is Not your name';
+                        Pattern pattern =
+                            r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]';
+                        RegExp regex = new RegExp(pattern);
+                        if (regex.hasMatch(val))
+                          return 'That is not your name';
+                        else
+                          return null;
+                      },
                       onChanged: (val) {
                         setState(() => name = val);
                       },
@@ -99,7 +109,16 @@ class _EditAccountState extends State<EditAccount> {
                     TextFormField(
                       initialValue: vendorPhoneNo,
                       decoration: textInputDecoration.copyWith(hintText: 'Phone Number'),
-                      validator: (val) => val.length < 10 ? 'Enter a valid phone Number' : null,
+                      validator: (val) {
+                        if(val.length != 10)
+                          return 'Enter a valid phone Number without country code';
+                        Pattern pattern = r'(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}';
+                        RegExp regex = new RegExp(pattern);
+                        if (!regex.hasMatch(val))
+                          return 'Enter valid Phone number without country code';
+                        else
+                          return null;
+                      },
                       onChanged: (val) {
                         setState(() => phoneNo = val);
                       },
@@ -108,7 +127,16 @@ class _EditAccountState extends State<EditAccount> {
                     TextFormField(
                       initialValue: vendorUpiId,
                       decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
-                      validator: (val) => val.isEmpty ? 'Enter a valid phone Number' : null,
+                      validator: (val) {
+                        if(val.isEmpty)
+                          return 'Enter a valid UPI ID';
+                        Pattern pattern = r'[\w\.\-_]{3,}@[a-zA-Z]{3,}';
+                        RegExp regex = new RegExp(pattern);
+                        if (!regex.hasMatch(val))
+                          return 'Enter valid UPI ID';
+                        else
+                          return null;
+                      },
                       onChanged: (val) {
                         setState(() => upiId = val);
                       },
@@ -117,7 +145,7 @@ class _EditAccountState extends State<EditAccount> {
                     RaisedButton(
                         color: Colors.pink[400],
                         child: Text(
-                          'Register',
+                          'Edit',
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {

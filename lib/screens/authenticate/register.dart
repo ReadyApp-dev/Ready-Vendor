@@ -53,7 +53,16 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: textInputDecoration.copyWith(hintText: 'E-Mail'),
-                validator: (val) => val.isEmpty ? 'Enter an email' : null,
+                validator: (val) {
+                  if(val.isEmpty)
+                    return 'Please Enter a valid Email';
+                  Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                  RegExp regex = new RegExp(pattern);
+                  if(!regex.hasMatch(val))
+                    return 'Enter Valid Email';
+                  else
+                    return null;
+                },
                 onChanged: (val) {
                   setState(() => email = val);
                 },
@@ -70,7 +79,17 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: textInputDecoration.copyWith(hintText: 'Shop Name'),
-                validator: (val) => val.isEmpty ? 'Enter your' : null,
+                validator: (val) {
+                  if(val.length < 3)
+                    return 'That is Not a shop name';
+                  Pattern pattern =
+                      r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]';
+                  RegExp regex = new RegExp(pattern);
+                  if (regex.hasMatch(val))
+                    return 'That is not a shop name';
+                  else
+                    return null;
+                },
                 onChanged: (val) {
                   setState(() => name = val);
                 },
@@ -94,7 +113,16 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: textInputDecoration.copyWith(hintText: 'Phone Number'),
-                validator: (val) => val.length < 10 ? 'Enter a valid phone Number' : null,
+                validator: (val) {
+                  if(val.length != 10)
+                    return 'Enter a valid phone Number without country code';
+                  Pattern pattern = r'(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}';
+                  RegExp regex = new RegExp(pattern);
+                  if (!regex.hasMatch(val))
+                    return 'Enter valid Phone number without country code';
+                  else
+                    return null;
+                },
                 onChanged: (val) {
                   setState(() => phoneNo = val);
                 },
@@ -102,7 +130,16 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
-                validator: (val) => val.isEmpty ? 'Enter your Address' : null,
+                validator: (val) {
+                  if(val.isEmpty)
+                    return 'Enter a valid UPI ID';
+                  Pattern pattern = r'[\w\.\-_]{3,}@[a-zA-Z]{3,}';
+                  RegExp regex = new RegExp(pattern);
+                  if (!regex.hasMatch(val))
+                    return 'Enter valid UPI ID';
+                  else
+                    return null;
+                },
                 onChanged: (val) {
                   setState(() => upiId = val);
                 },
