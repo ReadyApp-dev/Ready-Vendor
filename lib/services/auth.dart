@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:readyvendor/models/user.dart';
 import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/services/database.dart';
@@ -73,6 +74,15 @@ class AuthService {
   Future signOut() async {
     try {
       return await _auth.signOut();
+    } catch (error) {
+      print(error.toString());
+      return null;
+    }
+  }
+
+  Future resetPassword(String emailTarget) async {
+    try {
+      return await _auth.sendPasswordResetEmail(email: emailTarget);
     } catch (error) {
       print(error.toString());
       return null;

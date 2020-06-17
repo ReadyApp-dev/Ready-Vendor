@@ -21,6 +21,7 @@ class _SignInState extends State<SignIn> {
   // text field state
   String email = '';
   String password = '';
+  bool forgotPassword = false;
 
   @override
   bool passwordvisible;
@@ -66,7 +67,7 @@ class _SignInState extends State<SignIn> {
                 },
               ),
               SizedBox(height: 20.0),
-              TextFormField(
+              !forgotPassword ? TextFormField(
                 obscureText: passwordvisible,
                 decoration: textInputDecoration.copyWith(hintText: 'password',
                     suffixIcon: IconButton(
@@ -89,23 +90,49 @@ class _SignInState extends State<SignIn> {
                 onChanged: (val) {
                   setState(() => password = val);
                 },
-              ),
+              ):Text("Enter Email to send password reset link"),
+            FlatButton(
+              child: !forgotPassword
+                  ? new Text('Forgot password?',
+                  style: new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300))
+                  : new Text('Go Back to Sign In',
+                  style:
+                  new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300)),
+              onPressed: () => setState(() {
+                forgotPassword = !forgotPassword;
+              }),
+            ),
               SizedBox(height: 20.0),
               RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
-                    'Sign In',
+                    !forgotPassword?'Sign In':'Send Link to Reset',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
                       setState(() => loading = true);
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                      if(result == null) {
+                      if(!forgotPassword){
+                        dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                        if(result == null) {
+                          setState(() {
+                            loading = false;
+                            error = 'Could not sign in with those credentials';
+                          });
+                        }
+                      }else{
+                        await _auth.resetPassword(email);
                         setState(() {
                           loading = false;
-                          error = 'Could not sign in with those credentials';
+                          forgotPassword = !forgotPassword;
                         });
+                        /*
+                        final snackBar = SnackBar(
+                          content: Text('Link Sent!'),
+                        );
+                        Scaffold.of(context).showSnackBar(snackBar);
+
+                         */
                       }
                     }
                   }
