@@ -5,6 +5,8 @@ import 'package:readyvendor/screens/authenticate/authenticate.dart';
 import 'package:readyvendor/screens/home/home.dart';
 import 'package:readyvendor/screens/landing_page.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:readyvendor/shared/loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Wrapper extends StatelessWidget {
   @override
@@ -15,11 +17,29 @@ class Wrapper extends StatelessWidget {
     // return either the Home or Authenticate widget
     if (user == null){
       return Authenticate();
-    } else if(isVerified){
-      return Home();
-    } else {
-      return Landing();
+    } else{
+      return FutureBuilder<SharedPreferences>(
+        future: SharedPreferences.getInstance(),
+          builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot){
+          if(snapshot.data == null) return Loading();
+          SharedPreferences pref= snapshot.data ;
+
+            isVerified = pref.getBool('isVerified')?? false;
+          if(isVerified){
+              return Home();
+            } else {
+              return Landing();
+            }
+          }
+      );
     }
+
+
+
+
+
+
+
 
   }
 }

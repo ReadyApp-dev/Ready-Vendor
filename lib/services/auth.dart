@@ -4,6 +4,7 @@ import 'package:readyvendor/models/user.dart';
 import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
 
@@ -31,6 +32,8 @@ class AuthService {
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
       if(user.isEmailVerified){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool('isVerified', true);
         isVerified = true;
       }else{
         isVerified = false;
