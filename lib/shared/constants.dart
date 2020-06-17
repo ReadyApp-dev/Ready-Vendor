@@ -19,6 +19,7 @@ String vendorAddr2 = '';
 String vendorPhoneNo = '';
 String vendorUpiId = '';
 
+bool isVerified = false;
 
 List<Item> myCart = [];
 

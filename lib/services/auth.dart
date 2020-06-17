@@ -29,6 +29,11 @@ class AuthService {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
+      if(user.isEmailVerified){
+        isVerified = true;
+      }else{
+        isVerified = false;
+      }
       userUid = user.uid;
       //UserData userData = await DatabaseService(uid: user.uid).userDetails();
       return user;
@@ -42,7 +47,9 @@ class AuthService {
   Future registerWithEmailAndPassword(String email, String password, String name, String addr1, String addr2, String phoneNo, String upiId) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      isVerified = false;
       FirebaseUser user = result.user;
+      user.sendEmailVerification();
       // create a new document for the user with the uid
       userUid = user.uid;
       Vendor userData = Vendor(

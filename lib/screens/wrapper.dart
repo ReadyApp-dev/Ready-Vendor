@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:readyvendor/models/user.dart';
 import 'package:readyvendor/screens/authenticate/authenticate.dart';
 import 'package:readyvendor/screens/home/home.dart';
+import 'package:readyvendor/screens/landing_page.dart';
+import 'package:readyvendor/shared/constants.dart';
 
 class Wrapper extends StatelessWidget {
   @override
@@ -13,8 +15,10 @@ class Wrapper extends StatelessWidget {
     // return either the Home or Authenticate widget
     if (user == null){
       return Authenticate();
-    } else {
+    } else if(isVerified){
       return Home();
+    } else {
+      return Landing();
     }
 
   }
