@@ -111,7 +111,7 @@ class _EditAccountState extends State<EditAccount> {
                       height: MediaQuery
                           .of(context)
                           .size
-                          .height * 0.05,
+                          .height * 0.055,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: <Widget>[
@@ -119,7 +119,7 @@ class _EditAccountState extends State<EditAccount> {
                             width: MediaQuery
                                 .of(context)
                                 .size
-                                .width * 0.2,
+                                .width * 0.5,
 
                             child: TextFormField(
                               initialValue: vendorPhoneNo,
@@ -139,10 +139,11 @@ class _EditAccountState extends State<EditAccount> {
                               },
                             ),
                           ),
+                          SizedBox(width: 20.0,),
                           RaisedButton(
                             color: Colors.pink[400],
                             child: Text(
-                              'Edit',
+                              'Verify',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () async {
