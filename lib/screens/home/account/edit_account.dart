@@ -5,12 +5,12 @@ import 'package:readyvendor/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SettingsForm extends StatefulWidget {
+class EditAccount extends StatefulWidget {
   @override
-  _SettingsFormState createState() => _SettingsFormState();
+  _EditAccountState createState() => _EditAccountState();
 }
 
-class _SettingsFormState extends State<SettingsForm> {
+class _EditAccountState extends State<EditAccount> {
 
   final _formKey = GlobalKey<FormState>();
 

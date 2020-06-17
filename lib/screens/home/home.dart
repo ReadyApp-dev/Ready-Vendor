@@ -90,11 +90,14 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
+                    /*
                     FlatButton.icon(
                       icon: Icon(Icons.shopping_cart),
                       label: Text('cart'),
                       onPressed: () => _showSettingsPanel(),
                     )
+
+                     */
                   ],
                 ),
                 body: Container(
@@ -229,16 +232,19 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
+                    /*
                     FlatButton.icon(
                       icon: Icon(Icons.shopping_cart),
                       label: Text('cart'),
                       onPressed: () => _showSettingsPanel(),
                     )
+
+                     */
                   ],
                 ),
                 body: Container(
                   color: Colors.brown[100],
-                  child: SettingsForm(),
+                  child: EditAccount(),
                 )
             )
         );
@@ -270,11 +276,14 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
+                    /*
                     FlatButton.icon(
                       icon: Icon(Icons.shopping_cart),
                       label: Text('cart'),
                       onPressed: () => _showSettingsPanel(),
                     )
+
+                     */
                   ],
                 ),
                 body: Container(
