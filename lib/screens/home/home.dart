@@ -146,15 +146,10 @@ class _HomeState extends State<Home> {
                                     ),
                                     SizedBox(height: 20.0),
                                     TextFormField(
-                                      decoration: textInputDecorationSecond
-                                          .copyWith(hintText: 'Cost'),
-                                      validator: (val) =>
-                                      val.isEmpty
-                                          ? 'Enter cost'
-                                          : null,
+                                      decoration: textInputDecorationSecond.copyWith(hintText: 'Cost'),
+                                      validator: (val) =>  null,
                                       onChanged: (val) {
-                                        setState(() =>
-                                        itemCost = val as double);
+                                        setState(() => itemCost = double.parse(val));
                                       },
                                     ),
                                     SizedBox(height: 20.0),
@@ -164,7 +159,18 @@ class _HomeState extends State<Home> {
                                         //return SystemNavigator.pop();
                                         if (_formKey.currentState.validate()) {
                                           print("works");
-                                          Navigator.of(context).pop(false);
+                                          Item item = new Item(name: itemName,cost: itemCost,quantity: 0);
+                                          DatabaseService(uid: vendorUid).addItemToMenu(item);
+
+
+                                          Navigator.of(context).pop();
+                                          final snackBar = SnackBar(
+                                            content: Text('Added!'),
+                                          );
+
+                                          // Find the Scaffold in the widget tree and use
+                                          // it to show a SnackBar.
+                                          Scaffold.of(context).showSnackBar(snackBar);
                                           //setState(() => loading = true);
                                           /*
                                   dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);

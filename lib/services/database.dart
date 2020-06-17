@@ -15,6 +15,14 @@ class DatabaseService {
   final CollectionReference vendorCollection = Firestore.instance.collection('vendors');
 
 
+  Future<void> addItemToMenu(Item item) async {
+    return await vendorCollection.document(uid).collection('menu').add({
+      'name': item.name,
+      'cost': item.cost,
+      'quantity': item.quantity,
+    });
+  }
+
   Future<void> addItemToCart(Item item) async {
     print(item);
     print(uid);
