@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:readyvendor/models/item.dart';
 
@@ -18,6 +19,8 @@ String vendorAddr1 = '';
 String vendorAddr2 = '';
 String vendorPhoneNo = '';
 String vendorUpiId = '';
+
+FirebaseUser firebaseUser;
 
 bool isVerified = false;
 
@@ -47,3 +50,5 @@ const textInputDecorationSecond = InputDecoration(
     borderSide: BorderSide(color: Colors.pink, width: 2.0),
   ),
 );
+
+

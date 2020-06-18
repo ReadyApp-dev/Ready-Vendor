@@ -15,6 +15,7 @@ class AuthService {
     if(user==null){
       return null;
     }
+    firebaseUser = user;
     userUid = user.uid;
     return  User(uid: user.uid);
   }
@@ -72,6 +73,25 @@ class AuthService {
       return null;
     }
   }
+
+
+
+
+  Future verifyPhone(String mobile, BuildContext context) async{
+
+    _auth.verifyPhoneNumber(
+        phoneNumber: mobile,
+        timeout: Duration(seconds: 600),
+        verificationCompleted:  (AuthCredential _authCredential) async{
+              print("works");
+              await firebaseUser.linkWithCredential(_authCredential).then((value) => firebaseUser=value.user);
+              print(firebaseUser);
+          },
+
+        verificationFailed: null,
+        codeSent: null,
+        codeAutoRetrievalTimeout: null
+    );}
 
   // sign out
   Future signOut() async {
