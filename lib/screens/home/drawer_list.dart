@@ -1,15 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:readyvendor/shared/constants.dart';
+
 class DrawerList extends StatelessWidget {
   final void Function(int) setValue;
   DrawerList(this.setValue);
 
   @override
+  String name = vendorName;
   Widget build(BuildContext context) {
     List<Widget> lw = [
       DrawerHeader(
-        child: Text('Custom Header'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              child: Text(
+                'Welcome',
+                style: TextStyle(fontWeight: FontWeight.bold,fontStyle: FontStyle.italic,
+                  color: Colors.brown[800],
+                  fontSize: 25,
+                ),
+              ),
+            ),
+            Container(child: Text('$name',
+              style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic,
+              color: Colors.brown[800],
+              fontSize: 25,
+            ),
+            ),
+            ),
+          ],
+        ),
         decoration: BoxDecoration(
-          color: Colors.blue,
+          color: Colors.brown[200],
         ),
       ),
       ListTile(
