@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:readyvendor/models/user.dart';
 import 'package:readyvendor/models/vendor.dart';
+import 'package:readyvendor/screens/home/account/verify_phone.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 import 'package:readyvendor/shared/loading.dart';
@@ -14,6 +17,7 @@ class EditAccount extends StatefulWidget {
 class _EditAccountState extends State<EditAccount> {
 
   final _formKey = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
 
   // text field state
   String email = vendorEmail;
@@ -112,45 +116,51 @@ class _EditAccountState extends State<EditAccount> {
                           .of(context)
                           .size
                           .height * 0.055,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          Container(
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width * 0.5,
+                      child: Form(
+                        key: _formKey2,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: <Widget>[
+                            Container(
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width * 0.5,
 
-                            child: TextFormField(
-                              initialValue: vendorPhoneNo,
-                              decoration: textInputDecoration.copyWith(hintText: 'Phone Number'),
-                              validator: (val) {
-                                if(val.length != 10)
-                                  return 'Enter a valid phone Number without country code';
-                                Pattern pattern = r'(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}';
-                                RegExp regex = new RegExp(pattern);
-                                if (!regex.hasMatch(val))
-                                  return 'Enter valid Phone number without country code';
-                                else
-                                  return null;
-                              },
-                              onChanged: (val) {
-                                setState(() => phoneNo = val);
-                              },
+                              child: TextFormField(
+                                initialValue: vendorPhoneNo,
+                                decoration: textInputDecoration.copyWith(hintText: 'Phone Number'),
+                                validator: (val) {
+                                  if(val.length != 10)
+                                    return 'Enter a valid phone Number without country code';
+                                  Pattern pattern = r'(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}';
+                                  RegExp regex = new RegExp(pattern);
+                                  if (!regex.hasMatch(val))
+                                    return 'Enter valid Phone number without country code';
+                                  else
+                                    return null;
+                                },
+                                onChanged: (val) {
+                                  setState(() => phoneNo = val);
+                                },
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 20.0,),
-                          RaisedButton(
-                            color: Colors.pink[400],
-                            child: Text(
-                              'Verify',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () async {
-
-                            },
-                          )
-                        ],
+                            SizedBox(width: 20.0,),
+                            RaisedButton(
+                              color: Colors.pink[400],
+                              child: Text(
+                                'Verify',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              onPressed: () async {
+                                if(_formKey.currentState.validate()) {
+                                  Navigator.push(context, CupertinoPageRoute(
+                                      builder: (context) => VerifyPhone(phoneNo: phoneNo, otp: '')));
+                                }
+                              },
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 20.0),
