@@ -190,7 +190,18 @@ class _EditAccountState extends State<EditAccount> {
                         ),
                         onPressed: () async {
                           if(_formKey.currentState.validate()){
-                            Vendor newVendorData = new Vendor(email:email,uid:vendorUid,name: name, addr1: addr1, addr2: addr2, phoneNo: phoneNo,upiId: upiId);
+                            Vendor newVendorData = new Vendor(
+                                email:email,
+                                uid:vendorUid,
+                                name: name,
+                                addr1: addr1,
+                                addr2: addr2,
+                                phoneNo: phoneNo,
+                                upiId: upiId,
+                                latitude: vendorLatitude,
+                                longitude: vendorLongitude,
+                                isAvailable: true,
+                            );
                             print(newVendorData.phoneNo);
                             await DatabaseService(uid: userUid).updateVendorData(newVendorData);
                             //await DatabaseService(uid: userUid).getCurrentVendorDetails(vendorUid);

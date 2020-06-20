@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:readyvendor/models/item.dart';
 import 'package:readyvendor/models/user.dart';
@@ -13,6 +14,7 @@ import 'package:readyvendor/screens/home/cartAndMenu/cart_list.dart';
 import 'package:readyvendor/services/auth.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:readyvendor/shared/loading.dart';
 
 class Home extends StatefulWidget {
   num drawerItemSelected = 1;
@@ -33,17 +35,6 @@ class _HomeState extends State<Home> {
     userUid = user.uid;
     currentVendor = userUid;
     DatabaseService(uid: userUid).getCurrentVendorDetails(userUid);
-    /*
-    void _showSettingsPanel() {
-      showModalBottomSheet(context: context, builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 5.0),
-          child: CartWidget(),
-        );
-      },);
-    }
-
-     */
 
     Future<bool> _onWillPop() async {
       await showDialog(
@@ -92,21 +83,36 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
-                    /*
-                    FlatButton.icon(
-                      icon: Icon(Icons.shopping_cart),
-                      label: Text('cart'),
-                      onPressed: () => _showSettingsPanel(),
-                    )
-
-                     */
                   ],
                 ),
                 body: Container(
                   color: Colors.brown[100],
                   child: StreamProvider<List<Item>>.value(
                     value: DatabaseService().items,
-                    child:MenuList(),
+                    child:FutureBuilder(
+                    future: Geolocator().getCurrentPosition(
+                      desiredAccuracy: LocationAccuracy.best),
+                      builder: (BuildContext context, AsyncSnapshot<Position> snapshot){
+                        if(snapshot.data == null) return Loading();
+                        Position pos = snapshot.data;
+                        vendorLatitude = pos.latitude;
+                        vendorLongitude = pos.longitude;
+                        Vendor userData= new Vendor(
+                          uid: vendorUid,
+                          email: vendorEmail,
+                          name: vendorName,
+                          addr1: vendorAddr1,
+                          addr2: vendorAddr2,
+                          phoneNo: vendorPhoneNo,
+                          upiId: vendorUpiId,
+                          longitude: vendorLongitude,
+                          latitude: vendorLatitude,
+                          isAvailable: true,
+                        );
+                        DatabaseService(uid: userUid).updateVendorData(userData);
+                        return MenuList();
+                      }
+                    ),
                   ),
                 ),
               floatingActionButton: FloatingActionButton(

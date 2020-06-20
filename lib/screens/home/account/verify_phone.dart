@@ -62,7 +62,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
               RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
-                    'Edit',
+                    'Send OTP',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
@@ -76,11 +76,43 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                           await firebaseUser.linkWithCredential(
                               phoneAuthCredential).then((value) {
                             firebaseUser = value.user;
-
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return new AlertDialog(
+                                    title: new Text('Verification Successful!'),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: new Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
                           });
                         },
                         verificationFailed: (AuthException error) =>
-                            print(error.message),
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return new AlertDialog(
+                                    title: new Text('Verification failed!'),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: new Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            ),
                         codeSent: (String verificationId,
                             [int forceResendingToken]) {
                           verifyId = verificationId;
@@ -95,8 +127,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                initialValue: vendorUpiId,
-                decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
+                decoration: textInputDecoration.copyWith(hintText: 'Enter OTP here'),
                 onChanged: (val) {
                   setState(() => widget.otp = val);
                 },
@@ -105,7 +136,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
              showButton? RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
-                    'Edit',
+                    'Submit',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
