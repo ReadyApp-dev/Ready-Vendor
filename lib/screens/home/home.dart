@@ -9,8 +9,6 @@ import 'package:readyvendor/screens/home/account/edit_account.dart';
 import 'package:readyvendor/screens/home/drawer_list.dart';
 import 'package:readyvendor/screens/home/cartAndMenu/menu_list.dart';
 import 'package:readyvendor/screens/home/orderHistory/order_list.dart';
-import 'package:readyvendor/screens/home/vendors/vendor_list.dart';
-import 'package:readyvendor/screens/home/cartAndMenu/cart_list.dart';
 import 'package:readyvendor/services/auth.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';

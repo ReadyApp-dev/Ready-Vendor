@@ -22,6 +22,22 @@ class DatabaseService {
       'quantity': item.quantity,
     });
   }
+
+  Future<UserData> getUserDetails(String userId) async{
+    return await userCollection.document(userId).get().then((value) {
+
+      return UserData(
+        uid: uid,
+        name: value.data['name'],
+        email: value.data['email'],
+        addr1: value.data['address1'],
+        addr2: value.data['address2'],
+        phoneNo: value.data['phone'],
+        cartVendor: value.data['cartVendor'],
+        cartVal: value.data['cartVal'],
+      );
+    });
+  }
   
   Future<Vendor> getVendorDetails(String vendorId) async{
     return await vendorCollection.document(vendorId).get().then((value) {
@@ -176,7 +192,7 @@ class DatabaseService {
   }
 
   Stream<List<Order>> get orderHistory {
-    return userCollection.document(uid).collection('orderHistory').snapshots()
+    return vendorCollection.document(uid).collection('orderHistory').snapshots()
         .map(_orderListFromSnapshot);
   }
 

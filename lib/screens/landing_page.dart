@@ -34,6 +34,10 @@ class Landing extends StatelessWidget {
       ),
         body: Container(
           color: Colors.brown[100],
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
           child: Column(
             children: <Widget>[
               Text("Verify your mail ID and login again"),
