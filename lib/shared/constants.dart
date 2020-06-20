@@ -22,7 +22,7 @@ String vendorUpiId = '';
 double vendorLatitude = 0.0;
 double vendorLongitude = 0.0;
 bool vendorIsAvailable = true;
-
+String vendorToken='';
 FirebaseUser firebaseUser;
 
 bool isVerified = false;

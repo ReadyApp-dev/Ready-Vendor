@@ -96,6 +96,7 @@ class DatabaseService {
       'upiId': userData.upiId,
       'location': new GeoPoint(userData.latitude, userData.longitude),
       'isAvailable': userData.isAvailable,
+      'token': vendorToken,
     });
   }
 
