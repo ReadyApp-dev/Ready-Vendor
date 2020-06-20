@@ -128,12 +128,14 @@ class DatabaseService {
   }
 
   Future<void> updateOrderData(Order order) async {
-    return await userCollection.document(uid).collection("orderHistory").document(order.id).setData({
+    return await userCollection.document(order.user).collection("orderHistory").document(order.id).setData({
       'cart': order.cart,
       'status': order.status,
       'totalCost': order.totalCost,
       'user': order.user,
       'vendor': order.vendor,
+      'paymentMethod': order.paymentMethod,
+
     });
   }
 
@@ -144,6 +146,7 @@ class DatabaseService {
       'totalCost': order.totalCost,
       'user': order.user,
       'vendor': order.vendor,
+      'paymentMethod': order.paymentMethod,
     });
   }
 
@@ -165,6 +168,7 @@ class DatabaseService {
         totalCost: doc.data['totalCost'] ?? '0.0',
         user: doc.data['user'] ?? '0',
         vendor: doc.data['vendor'] ?? '0',
+        paymentMethod: doc.data['paymentMethod'] ?? '0',
       );
     }).toList();
   }

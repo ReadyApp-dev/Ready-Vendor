@@ -19,7 +19,7 @@ class OrderedItemTile extends StatelessWidget {
             //backgroundImage: AssetImage('assets/coffee_icon.png'),
           ),
           title: Text(item.name),
-          //subtitle: Text(' ${item.id} '),
+          subtitle: Text('Cost: ₹${item.cost} '),
           trailing: Text(' ${item.quantity}'),
         ),
       ),
