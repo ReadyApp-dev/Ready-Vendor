@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:readyvendor/models/vendor.dart';
+import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 
 class VerifyPhone extends StatefulWidget {
@@ -62,7 +64,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
               RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
-                    'Edit',
+                    'Send OTP',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
@@ -74,13 +76,61 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                         verificationCompleted: (
                             AuthCredential phoneAuthCredential) async {
                           await firebaseUser.linkWithCredential(
-                              phoneAuthCredential).then((value) {
+                              phoneAuthCredential).then((value) async {
                             firebaseUser = value.user;
+                            vendorPhoneNo = widget.phoneNo;
+                            Vendor newVendorData = new Vendor(
+                              email:vendorEmail,
+                              uid:vendorUid,
+                              name: vendorName,
+                              addr1: vendorAddr1,
+                              addr2: vendorAddr2,
+                              phoneNo: vendorPhoneNo,
+                              upiId: vendorUpiId,
+                              latitude: vendorLatitude,
+                              longitude: vendorLongitude,
+                              isAvailable: vendorIsAvailable,
+                            );
+                            print(newVendorData.phoneNo);
+                            await DatabaseService(uid: userUid).updateVendorData(newVendorData);
 
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return new AlertDialog(
+                                    title: new Text('Verification Successful!'),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: new Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
                           });
                         },
                         verificationFailed: (AuthException error) =>
-                            print(error.message),
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return new AlertDialog(
+                                    title: new Text('Verification failed!'),
+                                    actions: <Widget>[
+                                      new FlatButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: new Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            ),
                         codeSent: (String verificationId,
                             [int forceResendingToken]) {
                           verifyId = verificationId;
@@ -95,8 +145,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                initialValue: vendorUpiId,
-                decoration: textInputDecoration.copyWith(hintText: 'UPI Id'),
+                decoration: textInputDecoration.copyWith(hintText: 'Enter OTP here'),
                 onChanged: (val) {
                   setState(() => widget.otp = val);
                 },
@@ -105,7 +154,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
              showButton? RaisedButton(
                   color: Colors.pink[400],
                   child: Text(
-                    'Edit',
+                    'Submit',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
@@ -118,8 +167,23 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                       firebaseUser = await FirebaseAuth.instance.currentUser();
                       print(firebaseUser.uid);
                       firebaseUser.linkWithCredential(_phoneAuthCredential)
-                          .then((value) {
+                          .then((value) async{
                         firebaseUser = value.user;
+                        vendorPhoneNo = widget.phoneNo;
+                        Vendor newVendorData = new Vendor(
+                          email:vendorEmail,
+                          uid:vendorUid,
+                          name: vendorName,
+                          addr1: vendorAddr1,
+                          addr2: vendorAddr2,
+                          phoneNo: vendorPhoneNo,
+                          upiId: vendorUpiId,
+                          latitude: vendorLatitude,
+                          longitude: vendorLongitude,
+                          isAvailable: vendorIsAvailable,
+                        );
+                        print(newVendorData.phoneNo);
+                        DatabaseService(uid: userUid).updateVendorData(newVendorData);
                         showDialog(
                         context: context,
                         builder: (context) {

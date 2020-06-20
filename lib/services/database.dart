@@ -23,44 +23,19 @@ class DatabaseService {
     });
   }
 
-  Future<void> addItemToCart(Item item) async {
-    print(item);
-    print(uid);
-    return await userCollection.document(uid).collection('cart').document(item.id).setData({
-      'name': item.name,
-      'cost': item.cost,
-      'quantity': item.quantity,
-    });
-  }
+  Future<UserData> getUserDetails(String userId) async{
+    return await userCollection.document(userId).get().then((value) {
 
-  // brew list from snapshot
-  List<Vendor> _vendorListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc){
-      //print(doc.documentID);
-      return Vendor(
-        name: doc.data['Name'] ?? '',
-        uid: doc.documentID,
-        phoneNo: doc.data['phone'] ?? '0',
-        addr1: doc.data['address1'] ?? '0',
-        addr2: doc.data['address2'] ?? '0',
-        email: doc.data['email'] ?? '0',
-        upiId: doc.data['upiId'] ?? '0'
+      return UserData(
+        uid: uid,
+        name: value.data['name'],
+        email: value.data['email'],
+        addr1: value.data['address1'],
+        addr2: value.data['address2'],
+        phoneNo: value.data['phone'],
+        cartVendor: value.data['cartVendor'],
+        cartVal: value.data['cartVal'],
       );
-    }).toList();
-  }
-
-  Future<void> getCurrentUserDetails() async{
-    return await userCollection.document(uid).get().then((value) {
-
-      userUid = uid;
-      userName = value.data['name'];
-      userEmail = value.data['email'];
-      userAddr1 = value.data['address1'];
-      userAddr2 = value.data['address2'];
-      userPhoneNo = value.data['phone'];
-      userCartVendor = value.data['cartVendor'];
-      userCartVal = value.data['cartVal'];
-
     });
   }
   
@@ -74,6 +49,9 @@ class DatabaseService {
         addr2: value.data['address2'],
         phoneNo: value.data['phone'],
         upiId: value.data['upiId'],
+          latitude: value.data['location'].latitude,
+          longitude: value.data['location'].longitude,
+      isAvailable: value.data['isAvailable'],
       );
     });
   }
@@ -87,6 +65,9 @@ class DatabaseService {
       vendorAddr2 = value.data['address2'];
       vendorPhoneNo = value.data['phone'];
       vendorUpiId = value.data['upiId'];
+      vendorLatitude = value.data['location'].latitude;
+      vendorLongitude = value.data['location'].longitude;
+      vendorIsAvailable = value.data['isAvailable'];
       currentVendor = vendorId;
 
     });
@@ -105,20 +86,6 @@ class DatabaseService {
     );
   }
 
-
-
-  Future<void> updateUserData(UserData userData) async {
-    return await userCollection.document(uid).setData({
-      'name': userData.name,
-      'email': userData.email,
-      'address1': userData.addr1,
-      'address2': userData.addr2,
-      'phone': userData.phoneNo,
-      'cartVendor': userData.cartVendor,
-      'cartVal': userData.cartVal,
-    });
-  }
-
   Future<void> updateVendorData(Vendor userData) async {
     return await vendorCollection.document(uid).setData({
       'name': userData.name,
@@ -127,6 +94,8 @@ class DatabaseService {
       'address2': userData.addr2,
       'phone': userData.phoneNo,
       'upiId': userData.upiId,
+      'location': new GeoPoint(userData.latitude, userData.longitude),
+      'isAvailable': userData.isAvailable,
     });
   }
 
@@ -139,6 +108,9 @@ class DatabaseService {
       addr2: snapshot.data['address2'],
       phoneNo: snapshot.data['phone'],
       upiId: snapshot.data['upiId'],
+      latitude: snapshot.data['location'].latitude,
+      longitude: snapshot.data['location'].longitude,
+      isAvailable: snapshot.data['isAvailable'],
     );
   }
 
@@ -155,32 +127,15 @@ class DatabaseService {
     }).toList();
   }
 
-  Future<void> addOrderData(Order order) async {
-    return await userCollection.document(uid).collection("orderHistory").add({
-      'cart': order.cart,
-      'status': order.status,
-      'totalCost': order.totalCost,
-      'user': order.user,
-      'vendor': order.vendor,
-    });
-  }
-  Future<void> addOrderDataVendor(Order order) async {
-    return await vendorCollection.document(order.vendor).collection("orderHistory").add({
-      'cart': order.cart,
-      'status': order.status,
-      'totalCost': order.totalCost,
-      'user': order.user,
-      'vendor': order.vendor,
-    });
-  }
-
   Future<void> updateOrderData(Order order) async {
-    return await userCollection.document(uid).collection("orderHistory").document(order.id).setData({
+    return await userCollection.document(order.user).collection("orderHistory").document(order.id).setData({
       'cart': order.cart,
       'status': order.status,
       'totalCost': order.totalCost,
       'user': order.user,
       'vendor': order.vendor,
+      'paymentMethod': order.paymentMethod,
+
     });
   }
 
@@ -191,6 +146,7 @@ class DatabaseService {
       'totalCost': order.totalCost,
       'user': order.user,
       'vendor': order.vendor,
+      'paymentMethod': order.paymentMethod,
     });
   }
 
@@ -212,31 +168,9 @@ class DatabaseService {
         totalCost: doc.data['totalCost'] ?? '0.0',
         user: doc.data['user'] ?? '0',
         vendor: doc.data['vendor'] ?? '0',
+        paymentMethod: doc.data['paymentMethod'] ?? '0',
       );
     }).toList();
-  }
-
-  Future<void> clearCart() async{
-    await userCollection.document(uid).collection('cart').getDocuments().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.documents) {
-        ds.reference.delete();
-      }
-    });
-  }
-  
-
-  // delete all documents in a collection
-  Future<void> _deleteAll(QuerySnapshot snapshot) async {
-    for (DocumentSnapshot doc in snapshot.documents) {
-      doc.reference.delete();
-    }
-  }
-
-  // get vendors stream
-  Stream<List<Vendor>> get vendors {
-    //print(vendorCollection.getDocuments());
-    return vendorCollection.snapshots()
-        .map(_vendorListFromSnapshot);
   }
 
   // get menu items stream
@@ -265,7 +199,7 @@ class DatabaseService {
   }
 
   Stream<List<Order>> get orderHistory {
-    return userCollection.document(uid).collection('orderHistory').snapshots()
+    return vendorCollection.document(uid).collection('orderHistory').snapshots()
         .map(_orderListFromSnapshot);
   }
 

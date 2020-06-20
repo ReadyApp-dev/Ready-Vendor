@@ -3,6 +3,7 @@ import 'package:readyvendor/models/item.dart';
 import 'package:readyvendor/models/order.dart';
 import 'package:readyvendor/screens/home/orderHistory/ordered_item.dart';
 import 'package:readyvendor/screens/home/orderHistory/write_review.dart';
+import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 import 'package:readyvendor/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class OrderDetails extends StatelessWidget {
 
   Order order;
   OrderDetails({this.order});
+  bool recieved = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +46,45 @@ class OrderDetails extends StatelessWidget {
             SizedBox(height: 10.0),
             Expanded(child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Text(
-                "Total Order Value:\n ${userCartVal}",
-                style: TextStyle(
-                  color: Colors.pink[400],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.center,
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "Total Order Value:\n ${userCartVal}",
+                    style: TextStyle(
+                      color: Colors.pink[400],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(width: 20,),
+                  Text(
+                    "Payment Method:\n ${order.paymentMethod}",
+                    style: TextStyle(
+                      color: Colors.pink[400],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             )),
             SizedBox(height:10.0),
+
+            RaisedButton(
+              color: Colors.pink[400],
+              child: Text(
+                "Press if You Got what you wanted",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: (){
+                order.status = 'Completed';
+                DatabaseService(uid: userUid).updateOrderData(order);
+                DatabaseService(uid: userUid).updateOrderDataVendor(order);
+              },
+            ),
+            SizedBox(height: 10),
             RaisedButton(
               color: Colors.pink[400],
               child: Text(
@@ -62,11 +92,7 @@ class OrderDetails extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () async {
-                print("yess");
-                //Navigator.pop(context);
                 Navigator.push(context, CupertinoPageRoute(builder: (context) => WriteReview(order: order)));
-                //Navigator.pop(context);
-                print("noo");
               },
             ),
             SizedBox(height: 20.0),

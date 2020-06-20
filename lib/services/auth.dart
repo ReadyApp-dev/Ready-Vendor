@@ -37,6 +37,8 @@ class AuthService {
         prefs.setBool('isVerified', true);
         isVerified = true;
       }else{
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool('isVerified', false);
         isVerified = false;
       }
       userUid = user.uid;
@@ -53,6 +55,8 @@ class AuthService {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       isVerified = false;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isVerified', false);
       FirebaseUser user = result.user;
       user.sendEmailVerification();
       // create a new document for the user with the uid
@@ -65,6 +69,9 @@ class AuthService {
         addr2: addr2,
         phoneNo: phoneNo,
         upiId: upiId,
+        latitude: 0.0,
+        longitude: 0.0,
+        isAvailable: false,
       );
       await DatabaseService(uid: user.uid).updateVendorData(userData);
       return _userFromFirebaseUser(user);

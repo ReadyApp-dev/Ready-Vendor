@@ -135,8 +135,8 @@ class _PaymentPageState extends State<PaymentPage> {
                         user: userUid ?? '0',
                         vendor: userCartVendor ?? '0',
                       );
-                      DatabaseService(uid: userUid).addOrderData(order);
-                      DatabaseService(uid: userUid).addOrderDataVendor(order);
+                      //DatabaseService(uid: userUid).addOrderData(order);
+                      //DatabaseService(uid: userUid).addOrderDataVendor(order);
                       return AlertDialog(
                         title: new Text('Success!'),
                         content: new Text('Order placed successfully'),
@@ -145,7 +145,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             onPressed: () async {
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
-                              await DatabaseService(uid: userUid).clearCart();
+                              //await DatabaseService(uid: userUid).clearCart();
                               userCartVal = 0.0;
                               userCartVendor = '';
                             },
@@ -166,7 +166,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         user: userUid ?? '0',
                         vendor: userCartVendor ?? '0',
                       );
-                      DatabaseService(uid: userUid).addOrderData(order);
+                      //DatabaseService(uid: userUid).addOrderData(order);
 
                       return AlertDialog(
                           title: new Text('Error!'),

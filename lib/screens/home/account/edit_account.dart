@@ -27,6 +27,7 @@ class _EditAccountState extends State<EditAccount> {
   String addr2 = vendorAddr2;
   String phoneNo = vendorPhoneNo;
   String upiId = vendorUpiId;
+  bool isSwitched = vendorIsAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -182,15 +183,51 @@ class _EditAccountState extends State<EditAccount> {
                       },
                     ),
                     SizedBox(height: 20.0),
+                    Row(
+                      children: <Widget>[
+                        Text("Availabilty",
+                        style:TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                        )
+                        ),
+                        SizedBox(width: 20,),
+                        Switch(
+                          value: isSwitched,
+                          onChanged: (value) {
+                            setState(() {
+                              isSwitched = value;
+                              print(isSwitched);
+                            });
+                          },
+                          activeTrackColor: Colors.pinkAccent,
+                          activeColor: Colors.pink,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20.0),
+
                     RaisedButton(
                         color: Colors.pink[400],
                         child: Text(
-                          'Edit',
+                          'Update',
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {
                           if(_formKey.currentState.validate()){
-                            Vendor newVendorData = new Vendor(email:email,uid:vendorUid,name: name, addr1: addr1, addr2: addr2, phoneNo: phoneNo,upiId: upiId);
+                            Vendor newVendorData = new Vendor(
+                                email:email,
+                                uid:vendorUid,
+                                name: name,
+                                addr1: addr1,
+                                addr2: addr2,
+                                phoneNo: phoneNo,
+                                upiId: upiId,
+                                latitude: vendorLatitude,
+                                longitude: vendorLongitude,
+                                isAvailable: isSwitched,
+                            );
                             print(newVendorData.phoneNo);
                             await DatabaseService(uid: userUid).updateVendorData(newVendorData);
                             //await DatabaseService(uid: userUid).getCurrentVendorDetails(vendorUid);
@@ -200,6 +237,7 @@ class _EditAccountState extends State<EditAccount> {
                             vendorAddr2 = addr2;
                             vendorPhoneNo = phoneNo;
                             vendorUpiId = upiId;
+                            vendorIsAvailable = isSwitched;
 
                             final snackBar = SnackBar(
                               content: Text('Data Updated!'),
