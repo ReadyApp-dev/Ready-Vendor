@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:readyvendor/models/vendor.dart';
+import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
 
 class VerifyPhone extends StatefulWidget {
@@ -74,8 +76,24 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                         verificationCompleted: (
                             AuthCredential phoneAuthCredential) async {
                           await firebaseUser.linkWithCredential(
-                              phoneAuthCredential).then((value) {
+                              phoneAuthCredential).then((value) async {
                             firebaseUser = value.user;
+                            vendorPhoneNo = widget.phoneNo;
+                            Vendor newVendorData = new Vendor(
+                              email:vendorEmail,
+                              uid:vendorUid,
+                              name: vendorName,
+                              addr1: vendorAddr1,
+                              addr2: vendorAddr2,
+                              phoneNo: vendorPhoneNo,
+                              upiId: vendorUpiId,
+                              latitude: vendorLatitude,
+                              longitude: vendorLongitude,
+                              isAvailable: vendorIsAvailable,
+                            );
+                            print(newVendorData.phoneNo);
+                            await DatabaseService(uid: userUid).updateVendorData(newVendorData);
+
                             showDialog(
                                 context: context,
                                 builder: (context) {
@@ -149,8 +167,23 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                       firebaseUser = await FirebaseAuth.instance.currentUser();
                       print(firebaseUser.uid);
                       firebaseUser.linkWithCredential(_phoneAuthCredential)
-                          .then((value) {
+                          .then((value) async{
                         firebaseUser = value.user;
+                        vendorPhoneNo = widget.phoneNo;
+                        Vendor newVendorData = new Vendor(
+                          email:vendorEmail,
+                          uid:vendorUid,
+                          name: vendorName,
+                          addr1: vendorAddr1,
+                          addr2: vendorAddr2,
+                          phoneNo: vendorPhoneNo,
+                          upiId: vendorUpiId,
+                          latitude: vendorLatitude,
+                          longitude: vendorLongitude,
+                          isAvailable: vendorIsAvailable,
+                        );
+                        print(newVendorData.phoneNo);
+                        DatabaseService(uid: userUid).updateVendorData(newVendorData);
                         showDialog(
                         context: context,
                         builder: (context) {

@@ -49,6 +49,9 @@ class DatabaseService {
         addr2: value.data['address2'],
         phoneNo: value.data['phone'],
         upiId: value.data['upiId'],
+          latitude: value.data['location'].latitude,
+          longitude: value.data['location'].longitude,
+      isAvailable: value.data['isAvailable'],
       );
     });
   }
