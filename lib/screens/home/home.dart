@@ -14,6 +14,7 @@ import 'package:readyvendor/screens/home/orderHistory/order_list.dart';
 import 'package:readyvendor/services/auth.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:readyvendor/shared/contact_page.dart';
 import 'package:readyvendor/shared/loading.dart';
 
 class Home extends StatefulWidget {
@@ -70,9 +71,8 @@ class _HomeState extends State<Home> {
     User user = Provider.of<User>(context);
     userUid = user.uid;
     currentVendor = userUid;
-    DatabaseService(uid: userUid).getCurrentVendorDetails(userUid).then((value) => _register());
 
-    Future<bool> _onWillPop() async {
+    Future<bool> _onPopExit() async {
       await showDialog(
         context: context,
         builder: (context) => new AlertDialog(
@@ -92,10 +92,16 @@ class _HomeState extends State<Home> {
       ) ?? false;
     }
 
+    Future<bool> _onPopHome() async {
+      setState(() {
+        widget.drawerItemSelected = 1;
+      });
+    }
+
     switch(widget.drawerItemSelected){
       case 1: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopExit,
             child:  Scaffold(
               drawer: Drawer(
                 child: DrawerList((int i){
@@ -126,27 +132,35 @@ class _HomeState extends State<Home> {
                   child: StreamProvider<List<Item>>.value(
                     value: DatabaseService().items,
                     child:FutureBuilder(
-                    future: Geolocator().getCurrentPosition(
-                      desiredAccuracy: LocationAccuracy.best),
-                      builder: (BuildContext context, AsyncSnapshot<Position> snapshot){
-                        if(snapshot.data == null) return Loading();
-                        Position pos = snapshot.data;
-                        vendorLatitude = pos.latitude;
-                        vendorLongitude = pos.longitude;
-                        Vendor userData= new Vendor(
-                          uid: vendorUid,
-                          email: vendorEmail,
-                          name: vendorName,
-                          addr1: vendorAddr1,
-                          addr2: vendorAddr2,
-                          phoneNo: vendorPhoneNo,
-                          upiId: vendorUpiId,
-                          longitude: vendorLongitude,
-                          latitude: vendorLatitude,
-                          isAvailable: true,
+                      future: DatabaseService(uid: userUid).getCurrentVendorDetails(userUid),
+                      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                        _register();
+                        return FutureBuilder(
+                            future: Geolocator().getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.best),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Position> snapshot) {
+                              if (snapshot.data == null) return Loading();
+                              Position pos = snapshot.data;
+                              vendorLatitude = pos.latitude;
+                              vendorLongitude = pos.longitude;
+                              Vendor userData = new Vendor(
+                                uid: vendorUid,
+                                email: vendorEmail,
+                                name: vendorName,
+                                addr1: vendorAddr1,
+                                addr2: vendorAddr2,
+                                phoneNo: vendorPhoneNo,
+                                upiId: vendorUpiId,
+                                longitude: vendorLongitude,
+                                latitude: vendorLatitude,
+                                isAvailable: true,
+                              );
+                              DatabaseService(uid: userUid).updateVendorData(
+                                  userData);
+                              return MenuList();
+                            }
                         );
-                        DatabaseService(uid: userUid).updateVendorData(userData);
-                        return MenuList();
                       }
                     ),
                   ),
@@ -214,15 +228,6 @@ class _HomeState extends State<Home> {
                                           // it to show a SnackBar.
                                           Scaffold.of(context).showSnackBar(snackBar);
                                           //setState(() => loading = true);
-                                          /*
-                                  dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
-                                  if(result == null) {
-                                    setState(() {
-                                      loading = false;
-                                      error = 'Registration Failed';
-                                    });
-                                  }
-                                  */
                                         } else {
                                           setState(() {
                                             heightContainer = MediaQuery
@@ -258,7 +263,7 @@ class _HomeState extends State<Home> {
       break;
       case 2: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopHome,
             child:  Scaffold(
                 drawer: Drawer(
                   child: DrawerList((int i){
@@ -282,14 +287,6 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
-                    /*
-                    FlatButton.icon(
-                      icon: Icon(Icons.shopping_cart),
-                      label: Text('cart'),
-                      onPressed: () => _showSettingsPanel(),
-                    )
-
-                     */
                   ],
                 ),
                 body: Container(
@@ -302,7 +299,7 @@ class _HomeState extends State<Home> {
       break;
       case 3: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopHome,
             child:  Scaffold(
                 drawer: Drawer(
                   child: DrawerList((int i){
@@ -326,19 +323,47 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
-                    /*
-                    FlatButton.icon(
-                      icon: Icon(Icons.shopping_cart),
-                      label: Text('cart'),
-                      onPressed: () => _showSettingsPanel(),
-                    )
-
-                     */
                   ],
                 ),
                 body: Container(
                   color: Colors.brown[100],
                   child: OrderWidget(),
+                )
+            )
+        );
+      }
+      break;
+      case 4: {
+        return new WillPopScope(
+            onWillPop: _onPopHome,
+            child:  Scaffold(
+                drawer: Drawer(
+                  child: DrawerList((int i){
+                    print(i);
+                    setState(() {
+                      widget.drawerItemSelected = i;
+                      Navigator.of(context).pop();
+                    });
+                  }),
+                ),
+                backgroundColor: Colors.brown[50],
+                appBar: AppBar(
+                  title: Text('Ready'),
+                  backgroundColor: Colors.brown[400],
+                  elevation: 0.0,
+                  actions: <Widget>[
+                    FlatButton.icon(
+                      icon: Icon(Icons.person),
+                      label: Text('logout'),
+                      onPressed: () async {
+                        await _auth.signOut();
+                      },
+                    ),
+                  ],
+                ),
+                body: Container(
+                  color: Colors.brown[100],
+                  child: ContactUs(),
                 )
             )
         );
