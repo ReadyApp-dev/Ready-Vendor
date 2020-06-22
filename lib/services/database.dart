@@ -174,6 +174,11 @@ class DatabaseService {
     }).toList();
   }
 
+  Future<void> removeItemFromVendor(Item item) async {
+    print(item);
+    print(uid);
+    return await vendorCollection.document(vendorUid).collection('menu').document(item.id).delete();
+  }
   // get menu items stream
   Stream<List<Item>> get items {
     //print(vendorCollection.getDocuments());

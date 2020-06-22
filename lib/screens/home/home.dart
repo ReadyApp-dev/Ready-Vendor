@@ -28,7 +28,6 @@ class _HomeState extends State<Home> {
   String itemName = "";
   double itemCost = 0.0;
 
-
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   _register() {
@@ -59,11 +58,6 @@ class _HomeState extends State<Home> {
       //setState(() => _message = message["notification"]["title"]);
     });
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -217,8 +211,6 @@ class _HomeState extends State<Home> {
                                           print("works");
                                           Item item = new Item(name: itemName,cost: itemCost,quantity: 0);
                                           DatabaseService(uid: vendorUid).addItemToMenu(item);
-
-
                                           Navigator.of(context).pop();
                                           final snackBar = SnackBar(
                                             content: Text('Added!'),
@@ -370,7 +362,5 @@ class _HomeState extends State<Home> {
       }
       break;
     }
-
-
   }
 }
