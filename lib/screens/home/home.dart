@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,6 +14,7 @@ import 'package:readyvendor/screens/home/orderHistory/order_list.dart';
 import 'package:readyvendor/services/auth.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:readyvendor/shared/contact_page.dart';
 import 'package:readyvendor/shared/loading.dart';
 
 class Home extends StatefulWidget {
@@ -25,16 +28,46 @@ class _HomeState extends State<Home> {
   String itemName = "";
   double itemCost = 0.0;
 
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  _register() {
+    _firebaseMessaging.getToken().then((token) {
+      print(token+"end");
+      vendorToken = token;
+      vendorUid = userUid;
+      DatabaseService(uid: vendorUid).updateTokenData(vendorToken);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMessage();
+  }
+
+  void getMessage(){
+    _firebaseMessaging.configure(
+        onMessage: (Map<String, dynamic> message) async {
+          print('on message $message');
+          //setState(() => _message = message["notification"]["title"]);
+        }, onResume: (Map<String, dynamic> message) async {
+      print('on resume $message');
+      //setState(() => _message = message["notification"]["title"]);
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print('on launch $message');
+      //setState(() => _message = message["notification"]["title"]);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-
     User user = Provider.of<User>(context);
     userUid = user.uid;
     currentVendor = userUid;
-    DatabaseService(uid: userUid).getCurrentVendorDetails(userUid);
 
-    Future<bool> _onWillPop() async {
+    Future<bool> _onPopExit() async {
       await showDialog(
         context: context,
         builder: (context) => new AlertDialog(
@@ -54,10 +87,17 @@ class _HomeState extends State<Home> {
       ) ?? false;
     }
 
+    Future<bool> _onPopHome() async {
+      setState(() {
+        widget.drawerItemSelected = 1;
+      });
+      //return true;
+    }
+
     switch(widget.drawerItemSelected){
       case 1: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopExit,
             child:  Scaffold(
               drawer: Drawer(
                 child: DrawerList((int i){
@@ -70,8 +110,12 @@ class _HomeState extends State<Home> {
               ),
                 backgroundColor: Colors.brown[50],
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                  style: new TextStyle(
+                    color: Colors.black,
+                  ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -84,39 +128,57 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: StreamProvider<List<Item>>.value(
                     value: DatabaseService().items,
-                    child:FutureBuilder(
-                    future: Geolocator().getCurrentPosition(
-                      desiredAccuracy: LocationAccuracy.best),
-                      builder: (BuildContext context, AsyncSnapshot<Position> snapshot){
+                    child:FutureBuilder<bool>(
+                      future: DatabaseService(uid: userUid).getCurrentVendorDetails(userUid),
+                      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        print("1");
                         if(snapshot.data == null) return Loading();
-                        Position pos = snapshot.data;
-                        vendorLatitude = pos.latitude;
-                        vendorLongitude = pos.longitude;
-                        Vendor userData= new Vendor(
-                          uid: vendorUid,
-                          email: vendorEmail,
-                          name: vendorName,
-                          addr1: vendorAddr1,
-                          addr2: vendorAddr2,
-                          phoneNo: vendorPhoneNo,
-                          upiId: vendorUpiId,
-                          longitude: vendorLongitude,
-                          latitude: vendorLatitude,
-                          isAvailable: true,
+                        print(snapshot.data);
+                        print("works here");
+                        _register();
+                        return FutureBuilder(
+                            future: Geolocator().getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.best),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Position> snapshot) {
+                              if (snapshot.data == null) return Loading();
+                              print("works here too");
+                              Position pos = snapshot.data;
+                              vendorLatitude = pos.latitude;
+                              vendorLongitude = pos.longitude;
+                              Vendor userData = new Vendor(
+                                uid: vendorUid,
+                                email: vendorEmail,
+                                name: vendorName,
+                                addr1: vendorAddr1,
+                                addr2: vendorAddr2,
+                                phoneNo: vendorPhoneNo,
+                                upiId: vendorUpiId,
+                                longitude: vendorLongitude,
+                                latitude: vendorLatitude,
+                                isAvailable: true,
+                              );
+                              DatabaseService(uid: userUid).updateVendorData(
+                                  userData);
+                              print("works here too now");
+                              return MenuList();
+                            }
                         );
-                        DatabaseService(uid: userUid).updateVendorData(userData);
-                        return MenuList();
                       }
                     ),
                   ),
                 ),
               floatingActionButton: FloatingActionButton(
+                backgroundColor: appBarColor,
                   child: Text(
                       "Add Item",
                     textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
                   onPressed: () async{
                     double heightContainer = MediaQuery.of(context).size.height * 0.25;
@@ -158,15 +220,13 @@ class _HomeState extends State<Home> {
                                     ),
                                     SizedBox(height: 20.0),
                                     RaisedButton(
-                                      color: Colors.pink[400],
+                                      color: buttonColor,
                                       onPressed: () async {
                                         //return SystemNavigator.pop();
                                         if (_formKey.currentState.validate()) {
                                           print("works");
                                           Item item = new Item(name: itemName,cost: itemCost,quantity: 0);
                                           DatabaseService(uid: vendorUid).addItemToMenu(item);
-
-
                                           Navigator.of(context).pop();
                                           final snackBar = SnackBar(
                                             content: Text('Added!'),
@@ -176,15 +236,6 @@ class _HomeState extends State<Home> {
                                           // it to show a SnackBar.
                                           Scaffold.of(context).showSnackBar(snackBar);
                                           //setState(() => loading = true);
-                                          /*
-                                  dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
-                                  if(result == null) {
-                                    setState(() {
-                                      loading = false;
-                                      error = 'Registration Failed';
-                                    });
-                                  }
-                                  */
                                         } else {
                                           setState(() {
                                             heightContainer = MediaQuery
@@ -220,7 +271,7 @@ class _HomeState extends State<Home> {
       break;
       case 2: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopHome,
             child:  Scaffold(
                 drawer: Drawer(
                   child: DrawerList((int i){
@@ -231,10 +282,15 @@ class _HomeState extends State<Home> {
                     });
                   }),
                 ),
-                backgroundColor: Colors.brown[50],
+                backgroundColor: backgroundColor,
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
+
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -244,18 +300,10 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
-                    /*
-                    FlatButton.icon(
-                      icon: Icon(Icons.shopping_cart),
-                      label: Text('cart'),
-                      onPressed: () => _showSettingsPanel(),
-                    )
-
-                     */
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: EditAccount(),
                 )
             )
@@ -264,7 +312,7 @@ class _HomeState extends State<Home> {
       break;
       case 3: {
         return new WillPopScope(
-            onWillPop: _onWillPop,
+            onWillPop: _onPopHome,
             child:  Scaffold(
                 drawer: Drawer(
                   child: DrawerList((int i){
@@ -275,10 +323,14 @@ class _HomeState extends State<Home> {
                     });
                   }),
                 ),
-                backgroundColor: Colors.brown[50],
+                backgroundColor: backgroundColor,
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -288,26 +340,56 @@ class _HomeState extends State<Home> {
                         await _auth.signOut();
                       },
                     ),
-                    /*
-                    FlatButton.icon(
-                      icon: Icon(Icons.shopping_cart),
-                      label: Text('cart'),
-                      onPressed: () => _showSettingsPanel(),
-                    )
-
-                     */
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: OrderWidget(),
                 )
             )
         );
       }
       break;
+      case 4: {
+        return new WillPopScope(
+            onWillPop: _onPopHome,
+            child:  Scaffold(
+                drawer: Drawer(
+                  child: DrawerList((int i){
+                    print(i);
+                    setState(() {
+                      widget.drawerItemSelected = i;
+                      Navigator.of(context).pop();
+                    });
+                  }),
+                ),
+                backgroundColor: backgroundColor,
+                appBar: AppBar(
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
+                  elevation: 0.0,
+                  actions: <Widget>[
+                    FlatButton.icon(
+                      icon: Icon(Icons.person),
+                      label: Text('logout'),
+                      onPressed: () async {
+                        await _auth.signOut();
+                      },
+                    ),
+                  ],
+                ),
+                body: Container(
+                  color: backgroundColor,
+                  child: ContactUs(),
+                )
+            )
+        );
+      }
+      break;
     }
-
-
   }
 }

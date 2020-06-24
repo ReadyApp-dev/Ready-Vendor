@@ -23,16 +23,17 @@ class _SignInState extends State<SignIn> {
   String password = '';
   bool forgotPassword = false;
 
+  bool passwordVisible;
   @override
-  bool passwordvisible;
   void initState(){
-    passwordvisible=true;
+    super.initState();
+    passwordVisible=true;
   }
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
-      backgroundColor: Colors.brown[100],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.brown[400],
+        backgroundColor: appBarColor,
         elevation: 0.0,
         title: Text('Sign in to Ready'),
         actions: <Widget>[
@@ -68,12 +69,12 @@ class _SignInState extends State<SignIn> {
               ),
               SizedBox(height: 20.0),
               !forgotPassword ? TextFormField(
-                obscureText: passwordvisible,
+                obscureText: passwordVisible,
                 decoration: textInputDecoration.copyWith(hintText: 'password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         // Based on passwordVisible state choose the icon
-                        passwordvisible
+                        passwordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
                         color: Theme.of(context).primaryColorDark,
@@ -81,7 +82,7 @@ class _SignInState extends State<SignIn> {
                       onPressed: () {
                         // Update the state i.e. toogle the state of passwordVisible variable
                         setState(() {
-                          passwordvisible = !passwordvisible;
+                          passwordVisible = !passwordVisible;
                         });
                       },
                     )
@@ -104,10 +105,10 @@ class _SignInState extends State<SignIn> {
             ),
               SizedBox(height: 20.0),
               RaisedButton(
-                  color: Colors.pink[400],
+                  color: buttonColor,
                   child: Text(
                     !forgotPassword?'Sign In':'Send Link to Reset',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black),
                   ),
                   onPressed: () async {
                     if(_formKey.currentState.validate()){

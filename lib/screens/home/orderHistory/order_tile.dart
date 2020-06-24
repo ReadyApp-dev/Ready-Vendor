@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:readyvendor/models/order.dart';
 import 'package:readyvendor/models/user.dart';
-import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/screens/home/orderHistory/order_details.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
@@ -36,7 +35,7 @@ class _OrderTileState extends State<OrderTile> {
             child: ListTile(
               leading: CircleAvatar(
                 radius: 25.0,
-                backgroundColor: Colors.brown[200],
+                backgroundColor: Colors.grey,
                 //backgroundImage: AssetImage('assets/coffee_icon.png'),
               ),
               title: Text(userData.name),

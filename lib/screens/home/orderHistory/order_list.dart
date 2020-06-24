@@ -16,7 +16,6 @@ class _OrderWidgetState extends State<OrderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    double sum = 0.0;
     User user = Provider.of<User>(context);
     print(user);
     return StreamBuilder<List<Order>>(
