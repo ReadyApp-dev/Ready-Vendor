@@ -19,15 +19,6 @@ class _VerifyPhoneState extends State<VerifyPhone> {
 
   @override
   Widget build(BuildContext context) {
-
-
-    Future<void> _removeLoading() async {
-      await Future.delayed(Duration(seconds: 2));
-      setState(() {
-        Navigator.pop(context);
-      });
-    }
-
     return Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(

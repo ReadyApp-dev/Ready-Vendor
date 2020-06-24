@@ -49,7 +49,7 @@ class OrderDetails extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Text(
-                    "Total Order Value:\n ${userCartVal}",
+                    "Total Order Value:\n $userCartVal",
                     style: TextStyle(
                       color: Colors.pink[400],
                       fontWeight: FontWeight.bold,

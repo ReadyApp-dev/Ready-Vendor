@@ -90,6 +90,7 @@ class _HomeState extends State<Home> {
       setState(() {
         widget.drawerItemSelected = 1;
       });
+      return true;
     }
 
     switch(widget.drawerItemSelected){

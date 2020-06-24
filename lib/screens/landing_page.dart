@@ -8,13 +8,12 @@ class Landing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _removeLoading() async {
-      await Future.delayed(Duration(seconds: 10));
-    }
+
     Future<bool> _onWillPop() async {
       //print("yes works");
       await _auth.signOut();
     }
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
