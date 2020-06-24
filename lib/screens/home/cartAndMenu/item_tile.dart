@@ -23,7 +23,7 @@ class _ItemTileState extends State<ItemTile> {
         child: ListTile(
           leading: CircleAvatar(
             radius: 25.0,
-            backgroundColor: Colors.brown[200],
+            backgroundColor: Colors.grey,
             //backgroundImage: AssetImage('assets/coffee_icon.png'),
           ),
           title: Text(widget.item.name),

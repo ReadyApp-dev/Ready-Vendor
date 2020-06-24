@@ -54,4 +54,10 @@ const textInputDecorationSecond = InputDecoration(
   ),
 );
 
+//Colors
+const backgroundColor = const Color(0xff303030);
+const appBarColor = const Color(0xffe5da30);
+//const buttonColor = const Color(0xffe07b3a);
+const buttonColor = const Color(0xffe5da30);
+
 

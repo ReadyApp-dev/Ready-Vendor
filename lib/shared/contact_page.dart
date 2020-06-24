@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:readyvendor/shared/constants.dart';
 
 
 class ContactUs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
-        title: Text('Contact Us'),
-        backgroundColor: Colors.brown[400],
-        elevation: 0.0,
-      ),
       body: Container(
-        color: Colors.brown[100],
+        color: backgroundColor,
         child: Column(
           children: <Widget>[
             Card(
@@ -20,7 +16,11 @@ class ContactUs extends StatelessWidget {
                 children: <Widget>[
                   Icon(Icons.email),
                   SizedBox(width: 3.0,),
-                  Text('ready.app.mnnit@gmail.com'),
+                  Text(
+                      'ready.app.mnnit@gmail.com',
+                  style: new TextStyle(
+                    color: Colors.black,
+                  ), ),
                 ],
               ),
             )
