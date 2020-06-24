@@ -26,6 +26,7 @@ String vendorToken='';
 FirebaseUser firebaseUser;
 
 bool isVerified = false;
+bool phoneVerified = false;
 
 List<Item> myCart = [];
 

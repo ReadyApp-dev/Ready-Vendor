@@ -32,14 +32,21 @@ class AuthService {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
+      print(user.phoneNumber);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       if(user.isEmailVerified){
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isVerified', true);
         isVerified = true;
       }else{
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isVerified', false);
         isVerified = false;
+      }
+      if(user.phoneNumber == null){
+        prefs.setBool('phoneVerified', false);
+        phoneVerified = false;
+      }else{
+        prefs.setBool('phoneVerified', true);
+        phoneVerified = true;
       }
       userUid = user.uid;
       //UserData userData = await DatabaseService(uid: user.uid).userDetails();
@@ -57,6 +64,7 @@ class AuthService {
       isVerified = false;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isVerified', false);
+      prefs.setBool('phoneVerified', false);
       FirebaseUser user = result.user;
       user.sendEmailVerification();
       // create a new document for the user with the uid
@@ -81,9 +89,6 @@ class AuthService {
     }
   }
 
-
-
-
   Future verifyPhone(String mobile, BuildContext context) async{
 
     _auth.verifyPhoneNumber(
@@ -98,7 +103,8 @@ class AuthService {
         verificationFailed: null,
         codeSent: null,
         codeAutoRetrievalTimeout: null
-    );}
+    );
+  }
 
   // sign out
   Future signOut() async {

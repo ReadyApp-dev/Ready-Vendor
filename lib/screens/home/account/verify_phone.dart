@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:readyvendor/models/vendor.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyPhone extends StatefulWidget {
   String phoneNo;
@@ -16,6 +17,29 @@ class _VerifyPhoneState extends State<VerifyPhone> {
   final _formKey = GlobalKey<FormState>();
   bool showButton = false;
   String verifyId;
+
+  Future<dynamic> showError(BuildContext context,Exception error) {
+    SharedPreferences
+        .getInstance().then((value) => value.setBool('phoneVerified', false));
+    phoneVerified = false;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return new AlertDialog(
+            title: new Text('Verification failed!'),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: new Text('OK'),
+              ),
+            ],
+          );
+        }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,77 +84,69 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      print("sent");
-                      await FirebaseAuth.instance.verifyPhoneNumber(
-                        phoneNumber: "+91" + widget.phoneNo,
-                        timeout: Duration(seconds: 60),
-                        verificationCompleted: (
-                            AuthCredential phoneAuthCredential) async {
-                          await firebaseUser.linkWithCredential(
-                              phoneAuthCredential).then((value) async {
-                            firebaseUser = value.user;
-                            vendorPhoneNo = widget.phoneNo;
-                            Vendor newVendorData = new Vendor(
-                              email:vendorEmail,
-                              uid:vendorUid,
-                              name: vendorName,
-                              addr1: vendorAddr1,
-                              addr2: vendorAddr2,
-                              phoneNo: vendorPhoneNo,
-                              upiId: vendorUpiId,
-                              latitude: vendorLatitude,
-                              longitude: vendorLongitude,
-                              isAvailable: vendorIsAvailable,
-                            );
-                            print(newVendorData.phoneNo);
-                            await DatabaseService(uid: userUid).updateVendorData(newVendorData);
-
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return new AlertDialog(
-                                    title: new Text('Verification Successful!'),
-                                    actions: <Widget>[
-                                      new FlatButton(
-                                        onPressed: () async {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: new Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                }
-                            );
-                          });
-                        },
-                        verificationFailed: (AuthException error) =>
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return new AlertDialog(
-                                    title: new Text('Verification failed!'),
-                                    actions: <Widget>[
-                                      new FlatButton(
-                                        onPressed: () async {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: new Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                }
-                            ),
-                        codeSent: (String verificationId,
-                            [int forceResendingToken]) {
-                          verifyId = verificationId;
-                          setState(() {
-                            showButton = true;
-                          });
-                        },
-                        codeAutoRetrievalTimeout: null,
-                      );
+                        print("sent");
+                        await FirebaseAuth.instance.verifyPhoneNumber(
+                          phoneNumber: "+91" + widget.phoneNo,
+                          timeout: Duration(seconds: 60),
+                          verificationCompleted: (
+                              AuthCredential phoneAuthCredential) async {
+                            await firebaseUser.linkWithCredential(
+                                phoneAuthCredential).then((value) async {
+                              firebaseUser = value.user;
+                              vendorPhoneNo = widget.phoneNo;
+                              Vendor newVendorData = new Vendor(
+                                email: vendorEmail,
+                                uid: vendorUid,
+                                name: vendorName,
+                                addr1: vendorAddr1,
+                                addr2: vendorAddr2,
+                                phoneNo: vendorPhoneNo,
+                                upiId: vendorUpiId,
+                                latitude: vendorLatitude,
+                                longitude: vendorLongitude,
+                                isAvailable: vendorIsAvailable,
+                              );
+                              print(newVendorData.phoneNo);
+                              await DatabaseService(uid: userUid)
+                                  .updateVendorData(newVendorData);
+                              SharedPreferences prefs = await SharedPreferences
+                                  .getInstance();
+                              prefs.setBool('phoneVerified', true);
+                              phoneVerified = true;
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return new AlertDialog(
+                                      title: new Text(
+                                          'Verification Successful!'),
+                                      actions: <Widget>[
+                                        new FlatButton(
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: new Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                              );
+                            }).catchError((e){
+                              showError(context, e);
+                            });
+                          },
+                          verificationFailed: (AuthException error) async {
+                            showError(context, error);
+                          },
+                          codeSent: (String verificationId,
+                              [int forceResendingToken]) {
+                            verifyId = verificationId;
+                            setState(() {
+                              showButton = true;
+                            });
+                          },
+                          codeAutoRetrievalTimeout: null,
+                        );
                     }
                   }
               ),
@@ -150,49 +166,57 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      AuthCredential _phoneAuthCredential = PhoneAuthProvider
-                          .getCredential(
-                          verificationId: verifyId, smsCode: widget.otp);
-                      print("yes");
-                      print(_phoneAuthCredential);
-                      firebaseUser = await FirebaseAuth.instance.currentUser();
-                      print(firebaseUser.uid);
-                      firebaseUser.linkWithCredential(_phoneAuthCredential)
-                          .then((value) async{
-                        firebaseUser = value.user;
-                        vendorPhoneNo = widget.phoneNo;
-                        Vendor newVendorData = new Vendor(
-                          email:vendorEmail,
-                          uid:vendorUid,
-                          name: vendorName,
-                          addr1: vendorAddr1,
-                          addr2: vendorAddr2,
-                          phoneNo: vendorPhoneNo,
-                          upiId: vendorUpiId,
-                          latitude: vendorLatitude,
-                          longitude: vendorLongitude,
-                          isAvailable: vendorIsAvailable,
-                        );
-                        print(newVendorData.phoneNo);
-                        DatabaseService(uid: userUid).updateVendorData(newVendorData);
-                        showDialog(
-                        context: context,
-                        builder: (context) {
-                            return new AlertDialog(
-                              title: new Text('Verification Successful!'),
-                              actions: <Widget>[
-                                new FlatButton(
-                                  onPressed: () async {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: new Text('OK'),
-                                ),
-                              ],
-                            );
-                        }
-                        );
-                      });
+                        AuthCredential _phoneAuthCredential = PhoneAuthProvider
+                            .getCredential(
+                            verificationId: verifyId, smsCode: widget.otp);
+                        print("yes");
+                        print(_phoneAuthCredential);
+                        firebaseUser =
+                        await FirebaseAuth.instance.currentUser();
+                        print(firebaseUser.uid);
+                        firebaseUser.linkWithCredential(_phoneAuthCredential)
+                            .then((value) async {
+                          firebaseUser = value.user;
+                          vendorPhoneNo = widget.phoneNo;
+                          Vendor newVendorData = new Vendor(
+                            email: vendorEmail,
+                            uid: vendorUid,
+                            name: vendorName,
+                            addr1: vendorAddr1,
+                            addr2: vendorAddr2,
+                            phoneNo: vendorPhoneNo,
+                            upiId: vendorUpiId,
+                            latitude: vendorLatitude,
+                            longitude: vendorLongitude,
+                            isAvailable: vendorIsAvailable,
+                          );
+                          print(newVendorData.phoneNo);
+                          DatabaseService(uid: userUid).updateVendorData(
+                              newVendorData);
+                          SharedPreferences prefs = await SharedPreferences
+                              .getInstance();
+                          prefs.setBool('phoneVerified', true);
+                          phoneVerified = true;
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return new AlertDialog(
+                                  title: new Text('Verification Successful!'),
+                                  actions: <Widget>[
+                                    new FlatButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: new Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              }
+                          );
+                        }).catchError((e){
+                          showError(context, e);
+                        });
                     }
                   }
               ):Container(),

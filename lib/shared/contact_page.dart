@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:readyvendor/shared/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class ContactUs extends StatelessWidget {
@@ -14,45 +15,42 @@ class ContactUs extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("During Covid maintaining social distancing is as important as shopping essentials.",
-                style: TextStyle(color: Colors.white,letterSpacing: 1,fontWeight: FontWeight.bold,fontSize: 20),),
-              SizedBox(height: 4,),
-              Text("We are Ready to allow you to order anything from anywhere.",
-                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
-              SizedBox(height: 4,),
-              Text("Know which shop has what you want, Order before leaving home and avail cashless service for you own security.",
-                style: TextStyle(color: Colors.white,letterSpacing: 1,fontWeight: FontWeight.bold,fontSize: 20),),
-              SizedBox(height: 4,),
-              Text("We'll be following up with  Delivery soon. Keep in touch. ",
-                style: TextStyle(color: Colors.white ,fontWeight: FontWeight.bold,letterSpacing: 1,fontSize: 20),),
-              SizedBox(height: 4,),
-              Text("Stay Always Ready. ",style: TextStyle(color: Colors.white,letterSpacing: 1,fontWeight: FontWeight.bold,fontSize: 20),),
-              SizedBox(height: 4,),
-              Text(  "Stay Healthy. ",
-                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,letterSpacing: 1,fontSize: 20)),
-              SizedBox(height: 4,),
-              Text( "Stay Safe. Take care.",
-                style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,letterSpacing: 1,fontSize: 20),
+              SizedBox(height: 20,),
+              Text("Covid 19 changed the way we live the way shop and the "
+                  "entire world around us"
+                  ".We are Ready to allow you to order "
+                  "anything from anywhere.We'll be following up with  "
+                  "Delivery soon.\nStay Always Ready. "
+                  "\nStay Healthy. Stay Safe. \nKeep Ordering.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w200,
+                    fontSize: 20,
+                ),
               ),
-              SizedBox(height: 15,),
+              SizedBox(height: 30),
               Card(
                 margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.email),
-                    SizedBox(width: 3.0,),
-                    Text(
-                        'ready.app.mnnit@gmail.com',
+                child:InkWell(
+                  onTap: () async{
+                    await launch("ready.app.mnnit@gmail.com?subject=CustomerSupport");
+                  },
+                  child: ListTile(
+                    leading: Icon(Icons.email),
+                    title: Text(
+                      'ready.app.mnnit@gmail.com',
                       style: new TextStyle(
                         color: Colors.black,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               )
             ],
           ),
-        ),
+        )
       ),
     );
   }
