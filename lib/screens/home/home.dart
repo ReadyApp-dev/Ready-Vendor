@@ -34,7 +34,8 @@ class _HomeState extends State<Home> {
     _firebaseMessaging.getToken().then((token) {
       print(token+"end");
       vendorToken = token;
-      Firestore.instance.collection('vendors').document(vendorUid).updateData({'token': token}).then((value) => print("toekn sent"));
+      vendorUid = userUid;
+      DatabaseService(uid: vendorUid).updateTokenData(vendorToken);
     });
   }
 
@@ -90,7 +91,7 @@ class _HomeState extends State<Home> {
       setState(() {
         widget.drawerItemSelected = 1;
       });
-      return true;
+      //return true;
     }
 
     switch(widget.drawerItemSelected){
@@ -109,8 +110,12 @@ class _HomeState extends State<Home> {
               ),
                 backgroundColor: Colors.brown[50],
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                  style: new TextStyle(
+                    color: Colors.black,
+                  ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -123,12 +128,16 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: StreamProvider<List<Item>>.value(
                     value: DatabaseService().items,
-                    child:FutureBuilder(
+                    child:FutureBuilder<bool>(
                       future: DatabaseService(uid: userUid).getCurrentVendorDetails(userUid),
-                      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        print("1");
+                        if(snapshot.data == null) return Loading();
+                        print(snapshot.data);
+                        print("works here");
                         _register();
                         return FutureBuilder(
                             future: Geolocator().getCurrentPosition(
@@ -136,6 +145,7 @@ class _HomeState extends State<Home> {
                             builder: (BuildContext context,
                                 AsyncSnapshot<Position> snapshot) {
                               if (snapshot.data == null) return Loading();
+                              print("works here too");
                               Position pos = snapshot.data;
                               vendorLatitude = pos.latitude;
                               vendorLongitude = pos.longitude;
@@ -153,6 +163,7 @@ class _HomeState extends State<Home> {
                               );
                               DatabaseService(uid: userUid).updateVendorData(
                                   userData);
+                              print("works here too now");
                               return MenuList();
                             }
                         );
@@ -161,9 +172,13 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               floatingActionButton: FloatingActionButton(
+                backgroundColor: appBarColor,
                   child: Text(
                       "Add Item",
                     textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
                   onPressed: () async{
                     double heightContainer = MediaQuery.of(context).size.height * 0.25;
@@ -205,7 +220,7 @@ class _HomeState extends State<Home> {
                                     ),
                                     SizedBox(height: 20.0),
                                     RaisedButton(
-                                      color: Colors.pink[400],
+                                      color: buttonColor,
                                       onPressed: () async {
                                         //return SystemNavigator.pop();
                                         if (_formKey.currentState.validate()) {
@@ -267,10 +282,15 @@ class _HomeState extends State<Home> {
                     });
                   }),
                 ),
-                backgroundColor: Colors.brown[50],
+                backgroundColor: backgroundColor,
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
+
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -283,7 +303,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: EditAccount(),
                 )
             )
@@ -303,10 +323,14 @@ class _HomeState extends State<Home> {
                     });
                   }),
                 ),
-                backgroundColor: Colors.brown[50],
+                backgroundColor: backgroundColor,
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -319,7 +343,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: OrderWidget(),
                 )
             )
@@ -339,10 +363,14 @@ class _HomeState extends State<Home> {
                     });
                   }),
                 ),
-                backgroundColor: Colors.brown[50],
+                backgroundColor: backgroundColor,
                 appBar: AppBar(
-                  title: Text('Ready'),
-                  backgroundColor: Colors.brown[400],
+                  title: Text('Ready',
+                    style: new TextStyle(
+                      color: Colors.black,
+                    ),),
+                  iconTheme: new IconThemeData(color: Colors.black),
+                  backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
                     FlatButton.icon(
@@ -355,7 +383,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 body: Container(
-                  color: Colors.brown[100],
+                  color: backgroundColor,
                   child: ContactUs(),
                 )
             )

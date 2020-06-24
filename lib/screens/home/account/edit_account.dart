@@ -49,12 +49,7 @@ class _EditAccountState extends State<EditAccount> {
 
           Vendor vendor = snapshot.data;
           return  Scaffold(
-            backgroundColor: Colors.brown[100],
-            appBar: AppBar(
-              backgroundColor: Colors.brown[400],
-              elevation: 0.0,
-              title: Text('Edit Account'),
-            ),
+            backgroundColor: backgroundColor,
             body: Container(
               padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
               child: Form(
@@ -148,10 +143,10 @@ class _EditAccountState extends State<EditAccount> {
                             ),
                             SizedBox(width: 20.0,),
                             RaisedButton(
-                              color: Colors.pink[400],
+                              color: buttonColor,
                               child: Text(
                                 'Verify',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               onPressed: () async {
                                 if(_formKey.currentState.validate()) {
@@ -189,6 +184,7 @@ class _EditAccountState extends State<EditAccount> {
                         style:TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
+                          color: Colors.white,
                           letterSpacing: 1.0,
                         )
                         ),
@@ -201,18 +197,18 @@ class _EditAccountState extends State<EditAccount> {
                               print(isSwitched);
                             });
                           },
-                          activeTrackColor: Colors.pinkAccent,
-                          activeColor: Colors.pink,
+                          activeTrackColor: Colors.yellowAccent,
+                          activeColor: Colors.yellow,
                         ),
                       ],
                     ),
                     SizedBox(height: 20.0),
 
                     RaisedButton(
-                        color: Colors.pink[400],
+                        color: buttonColor,
                         child: Text(
                           'Update',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.black),
                         ),
                         onPressed: () async {
                           if(_formKey.currentState.validate()){

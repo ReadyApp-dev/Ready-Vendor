@@ -13,6 +13,7 @@ class DatabaseService {
   // collection reference
   final CollectionReference userCollection = Firestore.instance.collection('users');
   final CollectionReference vendorCollection = Firestore.instance.collection('vendors');
+  final CollectionReference reviewCollection = Firestore.instance.collection('reviews');
 
 
   Future<void> addItemToMenu(Item item) async {
@@ -56,7 +57,7 @@ class DatabaseService {
     });
   }
 
-  Future<void> getCurrentVendorDetails(String vendorId) async {
+  Future<bool> getCurrentVendorDetails(String vendorId) async {
     return await vendorCollection.document(vendorId).get().then((value) {
       vendorUid = vendorId;
       vendorName = value.data['name'];
@@ -69,7 +70,7 @@ class DatabaseService {
       vendorLongitude = value.data['location'].longitude;
       vendorIsAvailable = value.data['isAvailable'];
       currentVendor = vendorId;
-
+      return true;
     });
   }
 
@@ -98,6 +99,12 @@ class DatabaseService {
       'isAvailable': userData.isAvailable,
       'token': vendorToken,
     });
+  }
+
+  Future<void> updateTokenData(String token) async {
+    var ref = vendorCollection.document(vendorUid);
+    print(ref.path);
+    return await ref.updateData({'token': token}).then((value) => print("toekn sent"));
   }
 
   Vendor _vendorDataFromSnapshot(DocumentSnapshot snapshot) {
@@ -152,7 +159,10 @@ class DatabaseService {
   }
 
   Future<void> updateReview(Order order,double star, String review) async {
-    return await vendorCollection.document(order.vendor).collection("reviews").document(order.id).setData({
+    return await reviewCollection.add({
+      'vendorId':order.vendor,
+      'userId': order.id,
+      'time': DateTime.now(),
       'star': star,
       'review': review,
     });
