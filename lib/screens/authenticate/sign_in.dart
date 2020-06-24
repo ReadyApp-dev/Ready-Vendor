@@ -35,7 +35,12 @@ class _SignInState extends State<SignIn> {
       appBar: AppBar(
         backgroundColor: appBarColor,
         elevation: 0.0,
-        title: Text('Sign in to Ready'),
+        title: Text(
+          'Sign in to Ready',
+          style: new TextStyle(
+            color: Colors.black,
+          ),
+        ),
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
@@ -95,10 +100,10 @@ class _SignInState extends State<SignIn> {
             FlatButton(
               child: !forgotPassword
                   ? new Text('Forgot password?',
-                  style: new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300))
+                  style: new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300, color: Colors.white))
                   : new Text('Go Back to Sign In',
                   style:
-                  new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300)),
+                  new TextStyle(fontSize: 15.0, fontWeight: FontWeight.w300, color: Colors.white)),
               onPressed: () => setState(() {
                 forgotPassword = !forgotPassword;
               }),

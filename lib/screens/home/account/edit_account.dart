@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:readyvendor/models/user.dart';
 import 'package:readyvendor/models/vendor.dart';
+import 'package:readyvendor/screens/home/account/profile_page.dart';
 import 'package:readyvendor/screens/home/account/verify_phone.dart';
 import 'package:readyvendor/services/database.dart';
 import 'package:readyvendor/shared/constants.dart';
@@ -28,6 +29,7 @@ class _EditAccountState extends State<EditAccount> {
   String phoneNo = vendorPhoneNo;
   String upiId = vendorUpiId;
   bool isSwitched = vendorIsAvailable;
+  bool editProfile = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,14 @@ class _EditAccountState extends State<EditAccount> {
           */
 
           Vendor vendor = snapshot.data;
-          return  Scaffold(
+          return  !editProfile ? ProfilePage(
+            vendor: vendor,
+            changeMode: (){
+              setState(() {
+                editProfile = !editProfile;
+              });
+            }
+          ) : Scaffold(
             backgroundColor: backgroundColor,
             body: Container(
               padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),

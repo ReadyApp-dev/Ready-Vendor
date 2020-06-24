@@ -27,6 +27,7 @@ class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
   String itemName = "";
   double itemCost = 0.0;
+  bool editProfile = false;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 

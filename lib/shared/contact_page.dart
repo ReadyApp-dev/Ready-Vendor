@@ -43,9 +43,10 @@ class ContactUs extends StatelessWidget {
                     SizedBox(width: 3.0,),
                     Text(
                         'ready.app.mnnit@gmail.com',
-                    style: new TextStyle(
-                      color: Colors.black,
-                    ), ),
+                      style: new TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                   ],
                 ),
               )
