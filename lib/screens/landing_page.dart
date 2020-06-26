@@ -39,7 +39,16 @@ class Landing extends StatelessWidget {
                 .width,
           child: Column(
             children: <Widget>[
-              Text("Verify your mail ID and login again"),
+              Text(
+                  "Verify your mail ID and login again",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20,
+                ),
+              ),
               SizedBox(height: 20.0,),
           RaisedButton(
             color: buttonColor,

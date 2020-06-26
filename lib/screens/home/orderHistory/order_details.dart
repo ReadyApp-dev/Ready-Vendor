@@ -23,7 +23,15 @@ class OrderDetails extends StatelessWidget {
     if (out == null) return Loading();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Details'),
+        iconTheme: new IconThemeData(
+            color: Colors.black
+        ),
+        title: Text(
+          'Order Details',
+          style: new TextStyle(
+              color: Colors.black
+          ),
+        ),
         backgroundColor: appBarColor,
         elevation: 0.0,
       ),
@@ -32,19 +40,21 @@ class OrderDetails extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: out.length,
-                itemBuilder: (context, index) {
-                  return OrderedItemTile(
-                    item: out[index],
-                  );
-                },
+              child: Scrollbar(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: out.length,
+                  itemBuilder: (context, index) {
+                    return OrderedItemTile(
+                      item: out[index],
+                    );
+                  },
+                ),
               ),
             ),
             SizedBox(height: 10.0),
-            Expanded(child: Padding(
+            Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: <Widget>[
@@ -69,7 +79,7 @@ class OrderDetails extends StatelessWidget {
                   ),
                 ],
               ),
-            )),
+            ),
             SizedBox(height:10.0),
 
             RaisedButton(

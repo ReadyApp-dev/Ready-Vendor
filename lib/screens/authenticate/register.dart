@@ -163,24 +163,34 @@ class _RegisterState extends State<Register> {
               },
             ),
              SizedBox(height: 20.0,),
-              RaisedButton(
-                  color: buttonColor,
-                  child: Text(
-                    'Register',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  onPressed: () async {
-                    if(_formKey.currentState.validate()){
-                      setState(() => loading = true);
-                      dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
-                      if(result == null) {
-                        setState(() {
-                          loading = false;
-                          error = 'Registration Failed';
-                        });
+              Builder(
+                builder: (context) => RaisedButton(
+                    color: buttonColor,
+                    child: Text(
+                      'Register',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () async {
+                      if(_formKey.currentState.validate() && _isSelected){
+                        setState(() => loading = true);
+                        dynamic result = await _auth.registerWithEmailAndPassword(email, password, name, addr1, addr2, phoneNo,upiId);
+                        if(result == null) {
+                          setState(() {
+                            loading = false;
+                            error = 'Registration Failed';
+                          });
+                        }
+                      }else if(!_isSelected){
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          backgroundColor: appBarColor,
+                          content: Text("Agree to Terms & Conditions to continue",
+                            style: new TextStyle(
+                              color: Colors.black,
+                            ),),
+                        ));
                       }
                     }
-                  }
+                ),
               ),
               SizedBox(height: 12.0),
               Text(

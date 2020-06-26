@@ -35,7 +35,7 @@ class ContactUs extends StatelessWidget {
                 margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                 child:InkWell(
                   onTap: () async{
-                    await launch("ready.app.mnnit@gmail.com?subject=CustomerSupport");
+                    await launch("mailto:ready.app.mnnit@gmail.com?subject=CustomerSupport");
                   },
                   child: ListTile(
                     leading: Icon(Icons.email),
