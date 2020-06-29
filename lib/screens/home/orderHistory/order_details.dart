@@ -81,6 +81,19 @@ class OrderDetails extends StatelessWidget {
               ),
             ),
             SizedBox(height:10.0),
+            RaisedButton(
+              color: buttonColor,
+              child: Text(
+                "Order Packed",
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: (){
+                order.status = 'Packed';
+                DatabaseService(uid: userUid).updateOrderData(order);
+                //DatabaseService(uid: userUid).updateOrderDataVendor(order);
+              },
+            ),
+            SizedBox(height: 10.0,),
 
             RaisedButton(
               color: buttonColor,
