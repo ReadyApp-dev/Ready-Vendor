@@ -214,6 +214,8 @@ class _HomeState extends State<Home> {
                                     SizedBox(height: 20.0),
                                     TextFormField(
                                       decoration: textInputDecorationSecond.copyWith(hintText: 'Cost'),
+                                      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                                      keyboardType: TextInputType.number,
                                       validator: (val) =>  null,
                                       onChanged: (val) {
                                         setState(() => itemCost = double.parse(val));

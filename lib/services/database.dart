@@ -176,7 +176,7 @@ class DatabaseService {
         id: doc.documentID,
         cart: doc.data['cart'] ?? '',
         status: doc.data['status'],
-        totalCost: doc.data['totalCost'] ?? '0.0',
+        totalCost: doc.data['totalCost'] ?? 0.0,
         user: doc.data['user'] ?? '0',
         vendor: doc.data['vendor'] ?? '0',
         paymentMethod: doc.data['paymentMethod'] ?? '0',

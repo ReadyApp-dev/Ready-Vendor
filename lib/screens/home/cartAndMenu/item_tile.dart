@@ -28,12 +28,12 @@ class _ItemTileState extends State<ItemTile> {
           ),
           title: Text(widget.item.name),
           subtitle: Text('Cost: ₹${widget.item.cost} '),
-          trailing: Icon(
-            Icons.delete
-          ),
-          onTap: () async{
-            DatabaseService(uid: vendorUid).removeItemFromVendor(widget.item);
+          trailing: new IconButton(
+            icon: new Icon(Icons.delete),
+            onPressed: () async{
+              DatabaseService(uid: vendorUid).removeItemFromVendor(widget.item);
             },
+          ),
         ),
       ),
     );
