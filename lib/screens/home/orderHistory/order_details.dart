@@ -89,7 +89,7 @@ class OrderDetails extends StatelessWidget {
               ),
               onPressed: (){
                 order.status = 'Packed';
-                DatabaseService(uid: userUid).updateOrderData(order);
+                DatabaseService(uid: userUid).updateOrderDataVendor(order);
                 //DatabaseService(uid: userUid).updateOrderDataVendor(order);
               },
             ),
