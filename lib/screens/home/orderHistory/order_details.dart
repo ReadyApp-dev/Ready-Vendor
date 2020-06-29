@@ -80,25 +80,25 @@ class OrderDetails extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height:10.0),
-            RaisedButton(
+            (order.status == 'Order Placed')?SizedBox(height:10.0):SizedBox(height:0.0),
+            (order.status == 'Order Placed')?RaisedButton(
               color: buttonColor,
               child: Text(
                 "Order Packed",
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: (){
-                order.status = 'Packed';
+                order.status = 'packed';
                 DatabaseService(uid: userUid).updateOrderDataVendor(order);
                 //DatabaseService(uid: userUid).updateOrderDataVendor(order);
               },
-            ),
-            SizedBox(height: 10.0,),
+            ):Container(width: 0,height: 0,),
+            (order.status == 'Order Placed' || order.status == 'packed')?SizedBox(height: 10.0,):SizedBox(height: 0,),
 
-            RaisedButton(
+            (order.status == 'Order Placed' || order.status == 'packed')?RaisedButton(
               color: buttonColor,
               child: Text(
-                "Press if You Got what you wanted",
+                "Press if Order Completed",
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: (){
@@ -106,7 +106,7 @@ class OrderDetails extends StatelessWidget {
                 //DatabaseService(uid: userUid).updateOrderData(order);
                 DatabaseService(uid: userUid).updateOrderDataVendor(order);
               },
-            ),
+            ):Container(width: 0, height: 0,),
             SizedBox(height: 10),
             RaisedButton(
               color: buttonColor,

@@ -252,7 +252,7 @@ class _HomeState extends State<Home> {
                                       child: new Text(
                                         'Add Item',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: backgroundColor,
                                         ),
                                       ),
                                     ),
