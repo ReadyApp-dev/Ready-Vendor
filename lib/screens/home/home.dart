@@ -28,6 +28,8 @@ class _HomeState extends State<Home> {
   String itemName = "";
   double itemCost = 0.0;
   bool editProfile = false;
+  String searchresult='';
+  bool search = false;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -111,7 +113,22 @@ class _HomeState extends State<Home> {
               ),
                 backgroundColor: Colors.brown[50],
                 appBar: AppBar(
-                  title: Text('Ready',
+                  title: search ? TextField(
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
+                        hintText: "Search...",
+                        hintStyle: TextStyle(color: Colors.black)),
+                    onChanged: (val) {
+                      setState(() {
+                        searchresult = val;
+                      });
+                    },
+                  ) :
+                  Text('Ready',
                   style: new TextStyle(
                     color: Colors.black,
                   ),),
@@ -119,6 +136,21 @@ class _HomeState extends State<Home> {
                   backgroundColor: appBarColor,
                   elevation: 0.0,
                   actions: <Widget>[
+                    search ? IconButton(icon: Icon(Icons.close), onPressed: (){
+                      setState(() {
+                        search = !search;
+                        searchresult = '';
+                      });
+                    }) :
+                    FlatButton.icon(
+                      icon: Icon(Icons.search),
+                      label: Text('Search'),
+                      onPressed: ()  {
+                        setState(() {
+                          search = !search;
+                        });
+                      },
+                    ),
                     FlatButton.icon(
                       icon: Icon(Icons.person),
                       label: Text('logout'),
@@ -165,7 +197,7 @@ class _HomeState extends State<Home> {
                               DatabaseService(uid: userUid).updateVendorData(
                                   userData);
                               print("works here too now");
-                              return MenuList();
+                              return MenuList('$searchresult',search);
                             }
                         );
                       }
